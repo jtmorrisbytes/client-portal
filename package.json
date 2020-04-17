@@ -1,0 +1,63 @@
+{
+  "name": "express-massive-backend",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watchTestControllers": "nodemon --watch src/controllers -e js,spec.js --exec \"jasmine\"",
+    "testUnit": "echo \"No unit tests specified\"",
+    "testControllers": "jasmine src/controllers/**/*.spec.js",
+    "testRoutes": "",
+    "testDB": "",
+    "testCI": "",
+    "dev": "npx cross-env NODE_ENV=development DEBUG=true nodemon"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jtmorrisbytes/react-express.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=12.16.1"
+  },
+  "bugs": {
+    "url": "https://github.com/jtmorrisbytes/react-express/issues"
+  },
+  "homepage": "https://github.com/jtmorrisbytes/react-express#readme",
+  "dependencies": {
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "@testing-library/user-event": "^7.1.2",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-scripts": "3.4.1",
+    "body-parser": "^1.19.0",
+    "cross-env": "^7.0.2",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "massive": "^6.2.0",
+    "morgan": "^1.9.1"
+  },
+  "private": true,
+  "devDependencies": {
+    "jasmine-node": "^3.0.0"
+  }
+}

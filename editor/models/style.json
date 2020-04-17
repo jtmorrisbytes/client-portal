@@ -1,0 +1,19 @@
+{
+  "display": {
+    "type": "string",
+    "oneOf": ["inline-block", "block", "inline", "none"],
+    "default": "inline-block"
+  },
+  "position": {
+    "type": "string",
+    "oneOf": ["absolute", "relative", "fixed", "static", "sticky"],
+    "default": "static"
+  },
+  "top": {
+    "type": "unit",
+    "default": null
+  },
+  "bottom": {
+    "type": "unit"
+  }
+}
