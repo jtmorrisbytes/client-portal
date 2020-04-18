@@ -21,6 +21,7 @@ let {
 // make sure to include an app.use
 
 const app = express();
+console.log("require.main.filename", require?.main?.filename);
 
 app.use(
   session({
