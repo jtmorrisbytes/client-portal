@@ -27,6 +27,9 @@ let {
 
 const app = express();
 
+// use express.json as json parser
+app.use(express.json());
+
 // set up express session
 const SqLiteStore = require("connect-sqlite3")(session);
 
