@@ -26,10 +26,13 @@ let {
 // make sure to include an app.use
 
 const app = express();
-log("require.main.filename", require?.main?.filename);
+
+// set up express session
+const SqLiteStore = require("connect-sqlite3")(session);
 
 app.use(
   session({
+    store: new SqLiteStore(),
     resave: false,
     saveUninitialized: false,
     secret: SESSION_SECRET,
