@@ -4,7 +4,16 @@ const path = require("path");
 const morgan = require("morgan");
 const app = express();
 const massive = require("massive");
-let { SERVER_HOST, SERVER_PORT, DATABASE_URL, NODE_ENV } = process.env;
+let {
+  SERVER_HOST,
+  SERVER_PORT,
+  DATABASE_USERNAME,
+  DATABASE_PASSWORD,
+  DATABASE_HOST,
+  DATABASE_PORT,
+  DATABASE_NAME,
+  NODE_ENV,
+} = process.env;
 
 SERVER_HOST = SERVER_HOST || "127.0.0.1";
 
@@ -28,13 +37,15 @@ if (/^test/.test(NODE_ENV)) {
   module.exports = app;
 } else {
   console.log("setup complete... attempting to connect to the database...");
-  if (!DATABASE_URL) {
-    console.error(
-      "ERROR!: DATABASE_URL Must be in envorionment variables... exiting."
-    );
-    process.exit(-1);
-  }
-  massive(DATABASE_URL)
+  massive({
+    host: DATABASE_HOST,
+    port: DATABASE_PORT,
+    database: DATABASE_NAME,
+    user: DATABASE_USERNAME,
+    password: DATABASE_PASSWORD,
+    ssl: "require",
+    rejectUnauthorized: false,
+  })
     .then((db) => {
       app.listen(SERVER_PORT, SERVER_HOST, () => {
         console.log(`SERVER LISTENING on ${SERVER_HOST}:${SERVER_PORT}`);

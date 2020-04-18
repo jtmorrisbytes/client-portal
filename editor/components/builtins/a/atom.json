@@ -1,7 +1,0 @@
-{
-  "tagName": "a",
-  "builtin": true,
-  "style": {
-    "$ref": "#style"
-  }
-}

@@ -1,8 +1,8 @@
 {
-  "name": "express-massive-backend",
+  "name": "com.aspiesolutions.client-portal",
   "version": "0.0.1",
   "description": "",
-  "main": "index.js",
+  "main": "server/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "watchTestControllers": "nodemon --watch src/controllers -e js,spec.js --exec \"jasmine\"",
