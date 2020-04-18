@@ -70,6 +70,7 @@ if (/^test/.test(NODE_ENV)) {
     },
   })
     .then((db) => {
+      app.set("db", db);
       app.listen(SERVER_PORT, SERVER_HOST, () => {
         log(`SERVER LISTENING on ${SERVER_HOST}:${SERVER_PORT}`);
       });
