@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const path = require("path");
+const fs = require("fs");
 const morgan = require("morgan");
 const massive = require("massive");
 const session = require("express-session");
@@ -37,6 +38,8 @@ app.use(
 
 if (process.NODE_ENV === "production") {
   app.use(morgan("tiny"));
+  console.info = function () {};
+  console.debug = function () {};
 } else {
   app.use(morgan("dev"));
 }
@@ -55,8 +58,11 @@ if (/^test/.test(NODE_ENV)) {
     database: DATABASE_NAME,
     user: DATABASE_USERNAME,
     password: DATABASE_PASSWORD,
-    ssl: "require",
-    rejectUnauthorized: false,
+    ssl: {
+      mode: "require",
+      // rejectUnauthorized: false,
+      ca: fs.readFileSync("db.ca-certificate.crt"),
+    },
   })
     .then((db) => {
       app.listen(SERVER_PORT, SERVER_HOST, () => {

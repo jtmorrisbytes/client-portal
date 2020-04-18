@@ -2,7 +2,6 @@
   "name": "com.aspiesolutions.client-portal",
   "version": "0.0.1",
   "description": "",
-  "main": "server/index.js",
   "scripts": {
     "test": "npx jasmine",
     "dev": "npx cross-env NODE_ENV=development DEBUG=true nodemon"
