@@ -2,9 +2,13 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "webpack.config.js",
+  "main": "index.js",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run build:dev && npx cross-env NODE_ENV='test' jasmine",
+    "start:dev": "npm run build:dev && npx cross-env NODE_ENV='development' node index.js ",
+    "watch:dev": "nodemon --watch src --exec \"npm run start:dev\"",
+    "start": "npm run build && npx cross-env NODE_ENV='production' nodemon",
     "build:dev": "npx webpack --mode=development",
     "build": "npx webpack --mode=production"
   },
@@ -15,6 +19,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
+    "forever": "^2.0.0",
     "massive": "^6.3.0",
     "morgan": "^1.10.0"
   },

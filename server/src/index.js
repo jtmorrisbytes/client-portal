@@ -6,6 +6,10 @@ const morgan = require("morgan");
 const massive = require("massive");
 const session = require("express-session");
 
+global.log =
+  process.env.NODE_ENV === "production" ? function () {} : console.log;
+global.debug =
+  process.env.NODE_ENV === "production" ? function () {} : console.debug;
 let {
   SERVER_HOST,
   SERVER_PORT,
@@ -22,7 +26,7 @@ let {
 // make sure to include an app.use
 
 const app = express();
-console.log("require.main.filename", require?.main?.filename);
+log("require.main.filename", require?.main?.filename);
 
 app.use(
   session({
@@ -38,20 +42,18 @@ app.use(
 
 if (process.NODE_ENV === "production") {
   app.use(morgan("tiny"));
-  console.info = function () {};
-  console.debug = function () {};
 } else {
   app.use(morgan("dev"));
 }
-console.debug("loading routes...");
+log("loading routes...");
 const routes = require("./routes");
-console.debug("Routes module done loading, with result:", routes);
+debug("Routes module done loading, with result:", routes);
 app.use(routes.rootPath, routes.router);
 
 if (/^test/.test(NODE_ENV)) {
   module.exports = app;
 } else {
-  console.log("setup complete... attempting to connect to the database...");
+  log("setup complete... attempting to connect to the database...");
   massive({
     host: DATABASE_HOST,
     port: DATABASE_PORT,
@@ -66,7 +68,7 @@ if (/^test/.test(NODE_ENV)) {
   })
     .then((db) => {
       app.listen(SERVER_PORT, SERVER_HOST, () => {
-        console.log(`SERVER LISTENING on ${SERVER_HOST}:${SERVER_PORT}`);
+        log(`SERVER LISTENING on ${SERVER_HOST}:${SERVER_PORT}`);
       });
     })
     .catch((err) => {
