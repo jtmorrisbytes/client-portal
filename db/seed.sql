@@ -12,7 +12,7 @@ create table users (
   last_name text,
   phone_number varchar(25),
   setting_id int references setting(setting_id),
-  st_address text,
+  street_address text,
   city text,
   state text,
   zip text
@@ -24,7 +24,8 @@ create table client (
   client_id serial Primary Key,
   email varchar(254) UNIQUE NOT NULL,
   first_name text,
-  last_name text,phone_number varchar(25),
+  last_name text,
+  phone_number varchar(25),
   street_address text,
   city text,
   state text,
