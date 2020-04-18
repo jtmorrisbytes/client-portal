@@ -2,8 +2,9 @@ require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const morgan = require("morgan");
-const app = express();
 const massive = require("massive");
+const session = require("express-session");
+
 let {
   SERVER_HOST,
   SERVER_PORT,
@@ -13,21 +14,31 @@ let {
   DATABASE_PORT,
   DATABASE_NAME,
   NODE_ENV,
+  SESSION_SECRET,
+  SESSION_COOKIE_MAXAGE,
 } = process.env;
-
-SERVER_HOST = SERVER_HOST || "127.0.0.1";
-
 // if publishing client and server together,
 // make sure to include an app.use
 
+const app = express();
+
+app.use(
+  session({
+    resave: false,
+    saveUninitialized: false,
+    secret: SESSION_SECRET,
+    cookie: {
+      secure: false,
+      maxAge: SESSION_COOKIE_MAXAGE,
+    },
+  })
+);
+
 if (process.NODE_ENV === "production") {
-  SERVER_PORT = SERVER_PORT || 80;
   app.use(morgan("tiny"));
 } else {
-  SERVER_PORT = SERVER_PORT || 3001;
   app.use(morgan("dev"));
 }
-
 console.debug("loading routes...");
 const routes = require("./routes");
 console.debug("Routes module done loading, with result:", routes);
