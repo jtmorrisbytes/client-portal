@@ -1,16 +1,15 @@
-const express = require("express");
+import express from "express";
 const Router = express.Router;
-const fs = require("fs");
-const path = require("path");
-const rootPath = process.env.API_ROOT || "/api";
-const routes = Router();
+import fs from "fs";
+import path from "path";
+export const rootPath = process.env.API_ROOT || "/api";
+export const routes = Router();
 
 // require routers
-const auth = require("./auth");
-
+import auth from "./auth";
 // mount routers
+routes.get("/", (req, res) => {
+  res.send("ok");
+});
 routes.use(auth.basePath, auth.router);
-module.exports = {
-  rootPath,
-  router: routes,
-};
+export default { router: routes, rootPath };

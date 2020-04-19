@@ -41,7 +41,7 @@ app.use(
     secret: SESSION_SECRET,
     cookie: {
       secure: false,
-      maxAge: SESSION_COOKIE_MAXAGE,
+      maxAge: +SESSION_COOKIE_MAXAGE,
     },
   })
 );
@@ -52,7 +52,7 @@ if (process.NODE_ENV === "production") {
   app.use(morgan("dev"));
 }
 log("loading routes...");
-const routes = require("./routes");
+const routes = require("./routes").default;
 debug("Routes module done loading, with result:", routes);
 app.use(routes.rootPath, routes.router);
 
