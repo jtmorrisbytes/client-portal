@@ -10,6 +10,7 @@ global.log =
   process.env.NODE_ENV === "production" ? function () {} : console.log;
 global.debug =
   process.env.NODE_ENV === "production" ? function () {} : console.debug;
+
 let {
   SERVER_HOST,
   SERVER_PORT,
@@ -22,9 +23,6 @@ let {
   SESSION_SECRET,
   SESSION_COOKIE_MAXAGE,
 } = process.env;
-// if publishing client and server together,
-// make sure to include an app.use
-
 const app = express();
 
 // use express.json as json parser
@@ -45,20 +43,23 @@ app.use(
     },
   })
 );
-
-if (process.NODE_ENV === "production") {
-  app.use(morgan("tiny"));
-} else {
-  app.use(morgan("dev"));
-}
 log("loading routes...");
 const routes = require("./routes").default;
 debug("Routes module done loading, with result:", routes);
 app.use(routes.rootPath, routes.router);
 
-if (/^test/.test(NODE_ENV)) {
+if (process.NODE_ENV === "production") {
+  app.use(morgan("tiny"));
+  main();
+} else if (String(process.NODE_ENV).includes("test")) {
   module.exports = app;
 } else {
+  app.use(morgan("dev"));
+  main();
+}
+async function main() {
+  // if publishing client and server together,
+  // make sure to include an app.use
   log("setup complete... attempting to connect to the database...");
   massive({
     host: DATABASE_HOST,
@@ -82,3 +83,4 @@ if (/^test/.test(NODE_ENV)) {
       console.error("Database connection failed!", err);
     });
 }
+module.exports = { app, main };

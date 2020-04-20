@@ -2,21 +2,9 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "private": true,
-  "scripts": {
-    "test": "npm run build:dev && npx cross-env NODE_ENV='test' jasmine",
-    "start:dev": "npm run build:dev && npx cross-env NODE_ENV='development' node index.js ",
-    "watch:dev": "nodemon --watch src --exec \"npm run start:dev\"",
-    "start": "npm run build && npx cross-env NODE_ENV='production' nodemon",
-    "build:dev": "npx webpack --mode=development",
-    "build": "npx webpack --mode=production"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "main": "build.js",
   "dependencies": {
-    "@babel/runtime": "^7.9.2",
+    "babel-loader": "^8.1.0",
     "bcryptjs": "^2.4.3",
     "connect-sqlite3": "^0.9.11",
     "dotenv": "^8.2.0",
@@ -24,16 +12,17 @@
     "express-session": "^1.17.1",
     "forever": "^2.0.0",
     "massive": "^6.3.0",
-    "morgan": "^1.10.0"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.9.0",
-    "@babel/plugin-transform-async-to-generator": "^7.8.3",
-    "@babel/plugin-transform-runtime": "^7.9.0",
-    "@babel/preset-env": "^7.9.5",
-    "babel-loader": "^8.1.0",
+    "morgan": "^1.10.0",
+    "tar": "^6.0.1",
     "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11",
     "webpack-node-externals": "^1.7.2"
-  }
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

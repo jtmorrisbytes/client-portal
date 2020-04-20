@@ -31,6 +31,7 @@ export async function register(req, res) {
   } else {
     // email is marked as a unique, required field. if it already exists, the database will throw an error
     const { PEPPER } = process.env.NODE_ENV || { PEPPER: "" };
+    const salt = await bcrypt.genSalt(12);
     let hash = null;
     try {
       let result = await db.user.create(
