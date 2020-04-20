@@ -61,6 +61,9 @@ export async function register(req, res) {
   }
 }
 export async function logIn(req, res) {}
-export async function logOut(req, res) {}
+export async function logOut(req, res, next) {
+  res.locals.session = {};
+  next();
+}
 
 export default { register, logIn, logOut };

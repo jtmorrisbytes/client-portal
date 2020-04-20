@@ -1,4 +1,4 @@
-require("dotenv").config();
+const config = require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const fs = require("fs");
@@ -21,7 +21,17 @@ let {
   NODE_ENV,
   SESSION_SECRET,
   SESSION_COOKIE_MAXAGE,
+  REACT_APP_CLIENT_ID,
 } = process.env;
+
+if (!REACT_APP_CLIENT_ID) {
+  console.error(
+    "the react app client id has not been set. please set the react app client id"
+  );
+  console.log(config);
+  process.exit(-1);
+}
+
 // if publishing client and server together,
 // make sure to include an app.use
 
