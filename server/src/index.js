@@ -8,6 +8,7 @@ const session = require("express-session");
 const cookieparser = require("cookie-parser");
 const helmet = require("helmet");
 const https = require("https");
+const constants = require("constants");
 
 global.log =
   process.env.NODE_ENV === "production" ? function () {} : console.log;
@@ -71,6 +72,7 @@ app.use(
 const httpsOpts = {
   key: fs.readFileSync("privkey.pem"),
   cert: fs.readFileSync("fullchain.pem"),
+  secureOptions: constants.SSL_OP_NO_SSLv3 | constants.SSL_OP_NO,
   // ca: [fs.readFileSync("chain.pem")],
 };
 

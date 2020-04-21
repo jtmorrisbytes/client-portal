@@ -10,6 +10,7 @@ export const routes = Router();
 function postRequest(req, res) {
   console.log("this function ran after the request finished");
 }
+
 import auth from "./auth";
 import {
   enforceTimeStampExists,

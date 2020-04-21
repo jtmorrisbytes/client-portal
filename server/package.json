@@ -27,6 +27,7 @@
     "helmet": "^3.22.0",
     "massive": "^6.3.0",
     "morgan": "^1.10.0",
+    "node-http2": "^4.0.1",
     "redis": "^3.0.2"
   },
   "devDependencies": {
