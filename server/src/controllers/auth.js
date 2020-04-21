@@ -1,5 +1,10 @@
 import validateEmail from "../../../lib/validateEmail";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
+import {
+  MESSAGE_NOT_AUTHORIZED,
+  REASON_AUTH_STATE_INVALID,
+} from "../constants";
 export async function register(req, res) {
   const {
     firstName,
@@ -60,6 +65,24 @@ export async function register(req, res) {
     }
   }
 }
+export function checkAuthState(req, res, next) {
+  if (
+    req.session?.auth?.timestamp &&
+    req.session?.auth?.state &&
+    req.session?.auth?.ipAddr
+  ) {
+    // if there is already an auth session
+    next();
+    res.sendStatus(200);
+  } else {
+    res.status(401).json({
+      message: MESSAGE_NOT_AUTHORIZED,
+      reason: REASON_AUTH_STATE_INVALID,
+      description: "You must POST '/' on this route first",
+      redirectTo: "/",
+    });
+  }
+}
 export async function logIn(req, res) {}
 export async function logOut(req, res, next) {
   req.session.destroy();
@@ -68,5 +91,21 @@ export async function logOut(req, res, next) {
     next();
   }
 }
-
+export function getUser(req, res) {
+  let user = req.session?.user || null;
+  res.json({ user: user });
+}
+export function startAuthSession(req, res) {
+  // if we already have a session, clear the session
+  // and restart it
+  console.log(req.socket.remoteAddress);
+  req.session.user = null;
+  req.session.auth = {
+    timestamp: Date.now(),
+    //record the time that the auth session
+    state: crypto.randomBytes(64).toString("base64"),
+    ipAddr: req.connection.remoteAddress,
+  };
+  res.json(req.session);
+}
 export default { register, logIn, logOut };

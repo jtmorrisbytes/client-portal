@@ -72,7 +72,7 @@ app.use(
 const httpsOpts = {
   key: fs.readFileSync("privkey.pem"),
   cert: fs.readFileSync("fullchain.pem"),
-  secureOptions: constants.SSL_OP_NO_SSLv3 | constants.SSL_OP_NO,
+  secureOptions: constants.SSL_OP_NO_SSLv3,
   // ca: [fs.readFileSync("chain.pem")],
 };
 
@@ -90,7 +90,7 @@ app.use(
     saveUninitialized: false,
     secret: SESSION_SECRET,
     cookie: {
-      secure: false,
+      secure: true,
       maxAge: +SESSION_COOKIE_MAXAGE || 0,
     },
   })
@@ -105,23 +105,26 @@ log("loading routes...");
 const routes = require("./routes").default;
 debug("Routes module done loading, with result:", routes);
 app.use(routes.rootPath, routes.router);
-
+massive_config = {
+  host: DATABASE_HOST,
+  port: DATABASE_PORT,
+  database: DATABASE_NAME,
+  user: DATABASE_USERNAME,
+  password: DATABASE_PASSWORD,
+};
 if (/^test/.test(NODE_ENV)) {
   module.exports = app;
 } else {
-  log("setup complete... attempting to connect to the database...");
-  massive({
-    host: DATABASE_HOST,
-    port: DATABASE_PORT,
-    database: DATABASE_NAME,
-    user: DATABASE_USERNAME,
-    password: DATABASE_PASSWORD,
-    ssl: {
+  if (NODE_ENV === "production") {
+    massive_config.ssl = {
       mode: "require",
       // rejectUnauthorized: false,
       ca: fs.readFileSync("db.ca-certificate.crt"),
-    },
-  })
+    };
+  }
+
+  log("setup complete... attempting to connect to the database...");
+  massive(massive_config)
     .then((db) => {
       app.set("db", db);
       https
