@@ -17,12 +17,15 @@ function checkTimeStamp(req, res, next) {
 
 router.get("/", (req, res, next) => {
   let currentTimestamp = Date.now();
-  if (!req.session.firstTimestamp) {
+  debugger;
+  if (!req.session.firstTimeStamp) {
     // req.session.destroy();
     console.log("timestamp was not found on session");
     req.session.user = { email: "" };
     req.session.firstTimeStamp = currentTimestamp;
     req.session.timestamp = currentTimestamp;
+  } else {
+    console.log;
   }
   req.session.timestamp = currentTimestamp;
   req.session.expires =

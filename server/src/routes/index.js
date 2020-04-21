@@ -24,6 +24,12 @@ const { REACT_APP_CLIENT_ID } = process.env;
 
 // verify client id
 
+routes.use((req, res, next) => {
+  console.log("headers", req.headers);
+  console.log("session", req.session);
+  next();
+});
+
 routes.use(enforceClientIdExists);
 routes.post(auth.basePath + "/logout", auth.controller.logOut);
 routes.use(enforceTimeStampExpiry);

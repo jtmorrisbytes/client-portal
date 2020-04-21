@@ -5,7 +5,7 @@ const fs = require("fs");
 const morgan = require("morgan");
 const massive = require("massive");
 const session = require("express-session");
-
+const cookieparser = require("cookie-parser");
 global.log =
   process.env.NODE_ENV === "production" ? function () {} : console.log;
 global.debug =
@@ -41,17 +41,18 @@ const app = express();
 app.use(express.json());
 
 // set up express session
-const SqLiteStore = require("connect-sqlite3")(session);
-
+const redis = require("redis");
+const RedisStore = require("connect-redis")(session);
+app.use(cookieparser());
 app.use(
   session({
-    store: new SqLiteStore(),
+    store: new RedisStore({ client: redis.createClient() }),
     resave: false,
     saveUninitialized: false,
     secret: SESSION_SECRET,
     cookie: {
       secure: false,
-      maxAge: +SESSION_COOKIE_MAXAGE,
+      // maxAge: +SESSION_COOKIE_MAXAGE,
     },
   })
 );
