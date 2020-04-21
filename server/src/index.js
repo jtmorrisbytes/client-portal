@@ -67,6 +67,12 @@ app.use(
     },
   })
 );
+// https security options
+const httpsOpts = {
+  key: fs.readFileSync("privkey.pem"),
+  cert: fs.readFileSync("fullchain.pem"),
+  // ca: [fs.readFileSync("chain.pem")],
+};
 
 // use express.json as json parser
 app.use(express.json());
@@ -116,9 +122,11 @@ if (/^test/.test(NODE_ENV)) {
   })
     .then((db) => {
       app.set("db", db);
-      https.createServer(app).listen(SERVER_PORT, SERVER_HOST, () => {
-        log(`SERVER LISTENING on ${SERVER_HOST}:${SERVER_PORT}`);
-      });
+      https
+        .createServer(httpsOpts, app)
+        .listen(SERVER_PORT, SERVER_HOST, () => {
+          log(`SERVER LISTENING on ${SERVER_HOST}:${SERVER_PORT}`);
+        });
     })
     .catch((err) => {
       console.error("Database connection failed!", err);
