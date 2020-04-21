@@ -6,6 +6,9 @@ const morgan = require("morgan");
 const massive = require("massive");
 const session = require("express-session");
 const cookieparser = require("cookie-parser");
+const helmet = require("helmet");
+const https = require("https");
+
 global.log =
   process.env.NODE_ENV === "production" ? function () {} : console.log;
 global.debug =
@@ -37,6 +40,34 @@ if (!REACT_APP_CLIENT_ID) {
 
 const app = express();
 
+// set up helmet, enforcing as much security options as possible
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: [
+          "'self'",
+          "https://stackpath.bootstrapcdn.com/",
+          "https://www.aspiesolutions.com/",
+          "http://localhost:3000/",
+        ],
+      },
+    },
+    expectCt: {
+      maxAge: 0,
+      reportUri: "http://aspiesolutions.com/reportct",
+    },
+    featurePolicy: {
+      features: {
+        layoutAnimations: ["'self'"],
+        syncScript: ["'self'"],
+        documentDomain: ["'none'"],
+      },
+    },
+  })
+);
+
 // use express.json as json parser
 app.use(express.json());
 
@@ -52,7 +83,7 @@ app.use(
     secret: SESSION_SECRET,
     cookie: {
       secure: false,
-      // maxAge: +SESSION_COOKIE_MAXAGE,
+      maxAge: +SESSION_COOKIE_MAXAGE || 0,
     },
   })
 );
@@ -85,7 +116,7 @@ if (/^test/.test(NODE_ENV)) {
   })
     .then((db) => {
       app.set("db", db);
-      app.listen(SERVER_PORT, SERVER_HOST, () => {
+      https.createServer(app).listen(SERVER_PORT, SERVER_HOST, () => {
         log(`SERVER LISTENING on ${SERVER_HOST}:${SERVER_PORT}`);
       });
     })
