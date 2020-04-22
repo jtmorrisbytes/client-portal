@@ -8,7 +8,7 @@ import {
   checkAuthState,
 } from "../controllers/auth";
 // const controller = require("../controllers/auth");
-import { MAX_ELAPSED_REQUEST_TIME } from "../../../lib/constants";
+import { MAX_ELAPSED_REQUEST_TIME } from "../../../lib/constants.mjs";
 
 import crypto from "crypto";
 export const router = require("express").Router();
