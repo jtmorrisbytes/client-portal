@@ -4,6 +4,8 @@ module.exports = {
   entry: "./src/index.js",
   output: {
     filename: "index.js",
+    library: "app",
+    libraryTarget: "commonjs",
     path: path.resolve(__dirname),
   },
   target: "node",

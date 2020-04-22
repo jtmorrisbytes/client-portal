@@ -41,7 +41,7 @@ if (!REACT_APP_CLIENT_ID) {
 // if publishing client and server together,
 // make sure to include an app.use
 
-const app = express();
+export const app = express();
 
 // set up helmet, enforcing as much security options as possible
 app.use(
@@ -107,24 +107,22 @@ if (process.NODE_ENV === "production") {
 }
 const routes = require("./routes").default;
 app.use(routes.rootPath, routes.router);
-massive_config = {
+let massive_config = {
   host: DATABASE_HOST,
   port: DATABASE_PORT,
   database: DATABASE_NAME,
   user: DATABASE_USERNAME,
   password: DATABASE_PASSWORD,
 };
-if (NODE_ENV.includes("test")) {
-  module.exports = app;
-} else {
-  if (NODE_ENV === "production") {
-    massive_config.ssl = {
-      mode: "require",
-      // rejectUnauthorized: false,
-      ca: fs.readFileSync("db.ca-certificate.crt"),
-    };
-  }
-
+if (NODE_ENV === "production") {
+  massive_config.ssl = {
+    mode: "require",
+    // rejectUnauthorized: false,
+    ca: fs.readFileSync("db.ca-certificate.crt"),
+  };
+}
+export default app;
+if (NODE_ENV.includes("dev") || NODE_ENV.includes("prod")) {
   log("setup complete... attempting to connect to the database...");
   massive(massive_config)
     .then((db) => {
