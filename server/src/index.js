@@ -91,8 +91,10 @@ app.use(
     secret: SESSION_SECRET,
     cookie: {
       secure: true,
+      httpOnly: false,
       maxAge: +SESSION_COOKIE_MAXAGE || 0,
     },
+    unset: "destroy",
   })
 );
 

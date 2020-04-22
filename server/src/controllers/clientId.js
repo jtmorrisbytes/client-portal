@@ -1,4 +1,7 @@
-import { MESSAGE_BAD_REQUEST, MESSAGE_NOT_AUTHORIZED } from "../constants";
+import {
+  MESSAGE_BAD_REQUEST,
+  MESSAGE_NOT_AUTHORIZED,
+} from "../../../lib/constants";
 const { REACT_APP_CLIENT_ID } = process.env;
 export function enforceClientIdExists(req, res, next) {
   if (!req.query.clientid) {

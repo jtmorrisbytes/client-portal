@@ -15,13 +15,12 @@ function postRequest(req, res) {
 import auth from "./auth";
 
 // mount routers
-import { enforceClientIdExists } from "../controllers/clientId";
-import { MESSAGE_BAD_REQUEST, MESSAGE_NOT_AUTHORIZED } from "../constants";
+// import { enforceClientIdExists } from "../controllers/clientId";
 const { REACT_APP_CLIENT_ID } = process.env;
 
 // verify client id
 
-routes.use(enforceClientIdExists);
+// routes.use(enforceClientIdExists);
 routes.post(auth.basePath + "/logout", auth.controller.logOut);
 routes.use(auth.basePath, auth.router);
 routes.use(enforceUserLoggedIn);

@@ -39,6 +39,7 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "axios": "^0.19.2",
     "bcrypt": "^4.0.1",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",
@@ -50,7 +51,8 @@
     "morgan": "^1.9.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-scripts": "3.4.1"
+    "react-scripts": "3.4.1",
+    "sha1": "^1.1.1"
   },
   "private": true,
   "devDependencies": {
