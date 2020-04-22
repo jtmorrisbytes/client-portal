@@ -28,6 +28,8 @@ let {
   REACT_APP_CLIENT_ID,
 } = process.env;
 
+log("NODE_ENV is ", NODE_ENV || null);
+
 if (!REACT_APP_CLIENT_ID) {
   console.error(
     "the react app client id has not been set. please set the react app client id"
@@ -103,9 +105,7 @@ if (process.NODE_ENV === "production") {
 } else {
   app.use(morgan("dev"));
 }
-log("loading routes...");
 const routes = require("./routes").default;
-debug("Routes module done loading, with result:", routes);
 app.use(routes.rootPath, routes.router);
 massive_config = {
   host: DATABASE_HOST,
@@ -114,7 +114,7 @@ massive_config = {
   user: DATABASE_USERNAME,
   password: DATABASE_PASSWORD,
 };
-if (/^test/.test(NODE_ENV)) {
+if (NODE_ENV.includes("test")) {
   module.exports = app;
 } else {
   if (NODE_ENV === "production") {

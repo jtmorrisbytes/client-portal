@@ -5,11 +5,12 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "test": "npm run build:dev && npx cross-env NODE_ENV='test' jasmine",
-    "start:dev": "npm run build:dev && npx cross-env NODE_ENV='development' node index.js ",
+    "test": "npm run build:test && jasmine",
+    "start:dev": "set NODE_ENV='development'; npm run build:dev &&  node index.js ",
     "watch:dev": "nodemon --watch src --exec \"npm run start:dev\"",
     "start": "npm run build && npx cross-env NODE_ENV='production' nodemon",
     "build:dev": "npx webpack --mode=development",
+    "build:test": "set NODE_ENV=test && npx webpack --mode=development",
     "build": "npx webpack --mode=production"
   },
   "keywords": [],
