@@ -15,12 +15,15 @@ async function startAuthSession(done, callback) {
       } else {
         expect(res.body).toEqual(jasmine.any(Object));
         expect(res.body.auth).toEqual(jasmine.any(Object));
-        const { auth } = res.body;
+        const { auth, user } = res.body;
         expect(auth.timestamp).toEqual(jasmine.any(Number));
         expect(auth.timestamp).toBeLessThan(Date.now());
         expect(auth.timestamp).toBeGreaterThan(0);
         expect(auth.state).toBeDefined();
         expect(auth.state).toEqual(jasmine.any(String));
+        expect(auth.state.length).toBeGreaterThan(0);
+        expect(user).toBeNull();
+
         callback(res);
       }
     });
