@@ -1,18 +1,18 @@
 // do processing here
-import {
+const {
   logIn,
   logOut,
   register,
   getUser,
   startAuthSession,
   checkAuthState,
-} from "../controllers/auth";
+} = require("../controllers/auth");
 // const controller = require("../controllers/auth");
-import { MAX_ELAPSED_REQUEST_TIME } from "../../../lib/constants.mjs";
+const { MAX_ELAPSED_REQUEST_TIME } = require("../../../lib/constants.js");
 
-import crypto from "crypto";
-export const router = require("express").Router();
-export const basePath = "/auth";
+const crypto = require("crypto");
+const router = require("express").Router();
+const basePath = "/auth";
 
 /*
   1. client starts authentication chain by POSTing /, including the client id in request.
@@ -31,4 +31,4 @@ router.post("/register", checkAuthState, register);
 router.post("/login", checkAuthState, logIn);
 // router.post("/logout", logOut);
 
-export default { router, basePath, controller: { logIn, logOut, register } };
+module.exports = { router, basePath, controller: { logIn, logOut, register } };

@@ -1,5 +1,5 @@
-import { REASON, MESSAGE_NOT_AUTHORIZED } from "../../../lib/constants.mjs";
-export function enforceUserLoggedIn(req, res, next) {
+const { REASON, MESSAGE_NOT_AUTHORIZED } = require("../../../lib/constants");
+function enforceUserLoggedIn(req, res, next) {
   if (!req.session.user) {
     res.status(401).json({
       message: MESSAGE_NOT_AUTHORIZED,
@@ -8,3 +8,4 @@ export function enforceUserLoggedIn(req, res, next) {
     });
   }
 }
+module.exports = { enforceUserLoggedIn };

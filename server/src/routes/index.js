@@ -1,21 +1,21 @@
-import express from "express";
+const express = require("express");
 const Router = express.Router;
-import fs from "fs";
-import path from "path";
-export const rootPath = process.env.API_ROOT || "/api";
-export const routes = Router();
+const fs = require("fs");
+const path = require("path");
+const rootPath = process.env.API_ROOT || "/api";
+const routes = Router();
 
 // require routers
-import { enforceUserLoggedIn } from "../controllers/enforceAuth";
+const { enforceUserLoggedIn } = require("../controllers/enforceAuth");
 
 function postRequest(req, res) {
   console.log("this function ran after the request finished");
 }
 
-import auth from "./auth";
+const auth = require("./auth");
 
 // mount routers
-// import { enforceClientIdExists } from "../controllers/clientId";
+// const { enforceClientIdExists } = require( "../controllers/clientId";
 const { REACT_APP_CLIENT_ID } = process.env;
 
 // verify client id
@@ -26,4 +26,4 @@ routes.use(auth.basePath, auth.router);
 routes.use(enforceUserLoggedIn);
 // finalize the request
 
-export default { router: routes, rootPath };
+module.exports = { router: routes, rootPath };

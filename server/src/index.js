@@ -30,18 +30,18 @@ let {
 
 log("NODE_ENV is ", NODE_ENV || null);
 
-if (!REACT_APP_CLIENT_ID) {
-  console.error(
-    "the react app client id has not been set. please set the react app client id"
-  );
-  console.log(config);
-  process.exit(-1);
-}
+// if (!REACT_APP_CLIENT_ID) {
+//   console.error(
+//     "the react app client id has not been set. please set the react app client id"
+//   );
+//   console.log(config);
+//   process.exit(-1);
+// }
 
 // if publishing client and server together,
 // make sure to include an app.use
 
-export const app = express();
+const app = express();
 
 // set up helmet, enforcing as much security options as possible
 app.use(
@@ -121,9 +121,9 @@ if (NODE_ENV === "production") {
     ca: fs.readFileSync("db.ca-certificate.crt"),
   };
 }
-// export default server;
+// default server;
 
-export async function main() {
+async function main() {
   log("setup complete... attempting to connect to the database...");
   try {
     let db = await massive(massive_config);
@@ -142,4 +142,4 @@ export async function main() {
 if (NODE_ENV.includes("dev") || NODE_ENV.includes("prod")) {
   main();
 }
-export default main;
+module.exports = main;

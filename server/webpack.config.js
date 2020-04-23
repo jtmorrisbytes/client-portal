@@ -2,7 +2,7 @@ const path = require("path");
 const nodeExternals = require("webpack-node-externals");
 const { name } = require("./package.json");
 module.exports = {
-  entry: "./src/index.mjs",
+  entry: "./src/index.js",
   output: {
     filename: "index.js",
     library: name || "app",
@@ -19,12 +19,14 @@ module.exports = {
         use: {
           loader: "babel-loader",
           options: {
-            presets: ["@babel/preset-env"],
+            // presets: ["@babel/preset-env"],
             plugins: [
               // "@babel/plugin-transform-async-to-generator",
               "@babel/plugin-transform-runtime",
             ],
-            target: "node",
+            targets: {
+              node: true,
+            },
           },
         },
       },

@@ -1,5 +1,5 @@
 // const jasmine = require("jasmine");
-import server from "../../src/index.mjs";
+const server = require( "../../src/index.js");
 if(!server) {
  throw new Error
 }

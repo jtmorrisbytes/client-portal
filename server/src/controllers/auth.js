@@ -1,20 +1,20 @@
-import validateEmail from "../../../lib/validateEmail";
-import validatePasswordLocally from "../../../lib/validatePassword.mjs";
-import bcrypt from "bcryptjs";
-import axios from "axios";
-import sha1 from "sha1";
+const validateEmail = require("../../../lib/validateEmail");
+const validatePasswordLocally = require("../../../lib/validatePassword.js");
+const bcrypt = require("bcryptjs");
+const axios = require("axios");
+const sha1 = require("sha1");
 
-import crypto from "crypto";
-import {
+const crypto = require("crypto");
+const {
   MESSAGE_NOT_AUTHORIZED,
   MESSAGE_BAD_REQUEST,
   REASON,
   MESSAGE_NOT_FOUND,
   PASSWORD,
-} from "../../../lib/constants.mjs";
-import { MAX_ELAPSED_REQUEST_TIME } from "../../../lib/constants.mjs";
+} = require("../../../lib/constants.js");
+const { MAX_ELAPSED_REQUEST_TIME } = require("../../../lib/constants.js");
 const { NIST } = PASSWORD;
-export async function register(req, res) {
+async function register(req, res) {
   const {
     firstName,
     lastName,
@@ -103,18 +103,13 @@ export async function register(req, res) {
     }
   }
 }
-export function checkAuthState(req, res, next) {
+function checkAuthState(req, res, next) {
+  let { auth } = req.session;
+  const { timestamp, state, ipAddr } = auth || {};
   let currentTimestamp = Date.now();
-  if (
-    req.session?.auth?.timestamp &&
-    req.session?.auth?.state &&
-    req.session?.auth?.ipAddr
-  ) {
+  if (timestamp && state && ipAddr) {
     // if there is already an auth session
-    if (
-      currentTimestamp >
-      req.session.auth.timestamp + MAX_ELAPSED_REQUEST_TIME
-    ) {
+    if (currentTimestamp > timestamp + MAX_ELAPSED_REQUEST_TIME) {
       req.session.destroy();
       res.clearCookie("connect.sid");
       res.status(401).json({
@@ -123,7 +118,7 @@ export function checkAuthState(req, res, next) {
       });
     } else if (
       req.connection.remoteAddress &&
-      req.connection.remoteAddress != req.session.auth.ipAddr
+      req.connection.remoteAddress != ipAddr
     ) {
       // if the user jumps between devices or there is an ip address mismatch, clear session and cookie
       req.session.destroy();
@@ -132,14 +127,14 @@ export function checkAuthState(req, res, next) {
         message: MESSAGE_NOT_AUTHORIZED,
         reason: REASON.AUTH.IP_MISMATCH,
       });
-    } else if (req.session?.auth?.state && !req.query.state) {
+    } else if (state && !req.query.state) {
       res.status(401).json({
         message: MESSAGE_NOT_AUTHORIZED,
         reason: REASON.AUTH.STATE_MISSING,
         path: "query",
       });
-    } else if (req.session?.auth?.state != req.query.state) {
-      console.log(req.session.auth.state, req.query.state);
+    } else if (state != req.query.state) {
+      console.log(state, req.query.state);
       res.status(401).json({
         message: MESSAGE_NOT_AUTHORIZED,
         reason: REASON.AUTH.STATE_MISMATCH,
@@ -147,7 +142,7 @@ export function checkAuthState(req, res, next) {
     } else {
       next();
     }
-  } else if (!req.session?.auth?.state) {
+  } else if (!state) {
     res.status(400).json({
       message: MESSAGE_BAD_REQUEST,
       reason: REASON.AUTH.STATE_INVALID,
@@ -164,7 +159,7 @@ export function checkAuthState(req, res, next) {
     });
   }
 }
-export async function logIn(req, res) {
+async function logIn(req, res) {
   console.log("log in requested");
   let { email, password } = req.body;
   if (!email) {
@@ -206,16 +201,16 @@ export async function logIn(req, res) {
     }
   }
 }
-export async function logOut(req, res) {
+async function logOut(req, res) {
   req.session.destroy();
   res.clearCookie("connect.sid");
   res.sendStatus(200);
 }
-export function getUser(req, res) {
-  let user = req.session?.user || null;
+function getUser(req, res) {
+  let user = (req.session || {}).user || null;
   res.json({ user: user });
 }
-export function startAuthSession(req, res) {
+function startAuthSession(req, res) {
   // if we already have a session, clear the session
   // and restart it
   console.log(req.socket.remoteAddress);
@@ -228,4 +223,4 @@ export function startAuthSession(req, res) {
   };
   res.json(req.session);
 }
-export default { register, logIn, logOut };
+module.exports = { register, logIn, logOut, startAuthSession };

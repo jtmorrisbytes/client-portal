@@ -6,7 +6,6 @@
     "test": "npx jasmine",
     "dev": "npx cross-env NODE_ENV=development DEBUG=true nodemon"
   },
-  "type": "true",
   "eslintConfig": {
     "extends": "react-app"
   },
