@@ -105,7 +105,7 @@ if (process.NODE_ENV === "production") {
 } else {
   app.use(morgan("dev"));
 }
-const routes = require("./routes/index.js").default;
+const routes = require("./routes/index.js");
 app.use(routes.rootPath, routes.router);
 let massive_config = {
   host: DATABASE_HOST,
@@ -127,10 +127,11 @@ async function main() {
   log("setup complete... attempting to connect to the database...");
   try {
     let db = await massive(massive_config);
+    app.set("db", db);
   } catch (e) {
     console.log("connection failed:", e);
+    process.exit(-1);
   }
-  app.set("db", db);
   if (NODE_ENV.includes("dev") || NODE_ENV.includes("prod")) {
     https.createServer(httpsOpts, app).listen(SERVER_PORT, SERVER_HOST, () => {
       log(`SERVER LISTENING on ${SERVER_HOST}:${SERVER_PORT}`);

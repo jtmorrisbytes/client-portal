@@ -223,4 +223,11 @@ function startAuthSession(req, res) {
   };
   res.json(req.session);
 }
-module.exports = { register, logIn, logOut, startAuthSession };
+module.exports = {
+  register,
+  logIn,
+  logOut,
+  startAuthSession,
+  getUser,
+  checkAuthState,
+};

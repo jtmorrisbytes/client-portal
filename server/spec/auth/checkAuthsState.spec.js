@@ -1,30 +1,36 @@
 // const jasmine = require("jasmine");
-const server = require( "../../src/index.js");
-if(!server) {
- throw new Error
+const server = require("../../src/index.js");
+if (!server) {
+  throw new Error();
 }
 console.log(server || "nothing");
 const request = require("supertest");
-console.log(server.main());
-async function startAuthSession() {
-  return request(await server.main())
-    .post("https://localhost:3000/api/auth/")
-    .expect(500);
-}
-
-describe("When the app tries to authenticate", async function(done){
-  // console.dir(app);
-  it("should be able to POST /", (done) => {
-    await startAuthSession().end((err, res) => {
+async function startAuthSession(done, callback) {
+  request(await server())
+    .post("/api/auth/")
+    .expect("Content-Type", /json/)
+    .expect(200, (err, res) => {
       if (err) {
         done(err);
       } else {
-        let body = res.body;
-        expect(body).toEqual(jasmine.any(Object));
-        let auth = (body || {}).auth;
-        expect(auth).toEqual(jasmine.any(Object));
-        done();
+        expect(res.body).toEqual(jasmine.any(Object));
+        expect(res.body.auth).toEqual(jasmine.any(Object));
+        const { auth } = res.body;
+        expect(auth.timestamp).toEqual(jasmine.any(Number));
+        expect(auth.timestamp).toBeLessThan(Date.now());
+        expect(auth.timestamp).toBeGreaterThan(0);
+        expect(auth.state).toBeDefined();
+        expect(auth.state).toEqual(jasmine.any(String));
+        callback(res);
       }
+    });
+}
+
+describe("When the app tries to authenticate", function () {
+  // console.dir(app);
+  it("should be able to POST /", async (done) => {
+    startAuthSession(done, (res) => {
+      done();
     });
   });
 });
