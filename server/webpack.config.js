@@ -1,15 +1,16 @@
 const path = require("path");
 const nodeExternals = require("webpack-node-externals");
+const { name } = require("./package.json");
 module.exports = {
-  entry: "./src/index.js",
+  entry: "./src/index.mjs",
   output: {
     filename: "index.js",
-    library: "app",
+    library: name || "app",
     libraryTarget: "commonjs",
     path: path.resolve(__dirname),
   },
   target: "node",
-  externals: [nodeExternals()],
+  // externals: [nodeExternals()],
   module: {
     rules: [
       {
@@ -23,6 +24,7 @@ module.exports = {
               // "@babel/plugin-transform-async-to-generator",
               "@babel/plugin-transform-runtime",
             ],
+            target: "node",
           },
         },
       },

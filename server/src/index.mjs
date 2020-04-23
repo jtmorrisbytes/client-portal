@@ -105,7 +105,7 @@ if (process.NODE_ENV === "production") {
 } else {
   app.use(morgan("dev"));
 }
-const routes = require("./routes").default;
+const routes = require("./routes/index.js").default;
 app.use(routes.rootPath, routes.router);
 let massive_config = {
   host: DATABASE_HOST,
@@ -121,19 +121,25 @@ if (NODE_ENV === "production") {
     ca: fs.readFileSync("db.ca-certificate.crt"),
   };
 }
-export default app;
-if (NODE_ENV.includes("dev") || NODE_ENV.includes("prod")) {
+// export default server;
+
+export async function main() {
   log("setup complete... attempting to connect to the database...");
-  massive(massive_config)
-    .then((db) => {
-      app.set("db", db);
-      https
-        .createServer(httpsOpts, app)
-        .listen(SERVER_PORT, SERVER_HOST, () => {
-          log(`SERVER LISTENING on ${SERVER_HOST}:${SERVER_PORT}`);
-        });
-    })
-    .catch((err) => {
-      console.error("Database connection failed!", err);
+  try {
+    let db = await massive(massive_config);
+  } catch (e) {
+    console.log("connection failed:", e);
+  }
+  app.set("db", db);
+  if (NODE_ENV.includes("dev") || NODE_ENV.includes("prod")) {
+    https.createServer(httpsOpts, app).listen(SERVER_PORT, SERVER_HOST, () => {
+      log(`SERVER LISTENING on ${SERVER_HOST}:${SERVER_PORT}`);
     });
+  } else {
+    return await app.listen(SERVER_PORT, SERVER_HOST);
+  }
 }
+if (NODE_ENV.includes("dev") || NODE_ENV.includes("prod")) {
+  main();
+}
+export default main;
