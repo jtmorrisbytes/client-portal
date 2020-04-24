@@ -37,14 +37,13 @@ function RedisSession(config) {
   return (function (_this) {
     return function SessionHandler(req, res, next) {
       let sessionID = req.query.sessionID || req.body.sessionID;
+
       let update = async function update() {
-        console.log("update redis session requested", sessionID);
-        if (req.session) {
+        if (req.session && (req.session || {}).sessionID) {
+          console.log("update redis session requested", req.session, sessionID);
           console.log("redis session object after close", req.session);
-          let oldHash = req.app.get(sessionID);
-          let newHash = hash(req.session);
-          console.log("hash compare old, new", oldHash, newHash);
-          if (oldHash !== newHash) {
+          // console.log("hash compare old, new", oldHash, newHash);
+          if (!equal(req.session, initialSession)) {
             let reply = await _this.set(
               sessionID,
               JSON.stringify(req.session),
@@ -73,26 +72,36 @@ function RedisSession(config) {
                 "sucessfully updated session beginning with " +
                   sessionID.substring(0, 5)
               );
-              req.session = null;
+              res.removeListener("close", update);
+              res.removeListener("finish", update);
+              if (req.session) {
+                req.session = null;
+              }
               sessionID = null;
             }
           });
         }
+      }
+      var initialSession = {
+        update,
+        destroy,
+        create,
+      };
+      async function create() {
+        sessionID = crypto.randomBytes(32).toString("base64");
+        req.session = { ...initialSession, sessionID };
+        req.app.set(sessionID, hash(JSON.stringify(req.session)));
       }
       if (sessionID) {
         _this.client.get(sessionID.toString(), (err, reply) => {
           if (err) {
             next(err);
           } else if (reply === null) {
-            // res.removeListener("finish", (_this, sessionID, req) => () =>
-            //   update(_this, sessionID, req)
-            // );
-            // res.removeListener("close", update.bind(_this, sessionID, req));
             res.status(400).json({ message: "Session ID does not exist" });
             return;
           } else {
             try {
-              req.session = JSON.parse(reply);
+              req.session = { ...initialSession, ...JSON.parse(reply) };
               next();
             } catch (e) {
               console.warn(
@@ -107,15 +116,7 @@ function RedisSession(config) {
           }
         });
       } else {
-        sessionID = crypto.randomBytes(32).toString("base64");
-        req.session = {
-          session: {
-            sessionID,
-            destroy,
-            update,
-          },
-        };
-        req.app.set(sessionID, hash(JSON.stringify(req.session)));
+        req.session = { ...initialSession };
         next();
       }
       console.log("redis session handler called");

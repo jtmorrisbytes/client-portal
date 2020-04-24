@@ -58,11 +58,6 @@ async function register(req, res) {
       try {
         let { found } = await axios.get(
           NIST.URL + nistHash + `?api_key=${process.env.NIST_TOKEN}`
-          // {
-          //   headers: {
-          //     Authentication: `${process.env.NIST_TOKEN}`,
-          //   },
-          // }
         );
         if (found) {
           res.status(400).json({
@@ -143,6 +138,7 @@ async function logIn(req, res) {
         user.hash
       );
       if (authenticated) {
+        req.session.user = {};
         (req.session.user.firstName = user.first_name),
           (req.session.user.lastName = user.lastName),
           (req.session.user.email = user.email),
@@ -150,6 +146,14 @@ async function logIn(req, res) {
           (req.session.user.city = user.city),
           (req.session.user.state = user.state),
           (req.session.user.zip = user.zip);
+        res.json(req.session);
+      } else {
+        res
+          .status(401)
+          .json({
+            message: MESSAGE_NOT_AUTHORIZED,
+            reason: REASON.LOGIN.PASSWORD.MISSING,
+          });
       }
     }
   }
