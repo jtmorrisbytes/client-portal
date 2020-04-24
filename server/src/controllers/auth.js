@@ -148,12 +148,10 @@ async function logIn(req, res) {
           (req.session.user.zip = user.zip);
         res.json(req.session);
       } else {
-        res
-          .status(401)
-          .json({
-            message: MESSAGE_NOT_AUTHORIZED,
-            reason: REASON.LOGIN.PASSWORD.MISSING,
-          });
+        res.status(401).json({
+          message: MESSAGE_NOT_AUTHORIZED,
+          reason: REASON.LOGIN.PASSWORD.MISSING,
+        });
       }
     }
   }
@@ -166,10 +164,23 @@ function getUser(req, res) {
   let user = (req.session || {}).user || null;
   res.json({ user: user });
 }
+function startAuthSession(req, res) {
+  // if we already have a session, clear the session
+  // and restart it
+  const state = crypto.randomBytes(64).toString("base64");
+  const stateObj = {
+    state,
+    timestamp: Date.now(),
+    ipAddr: req.connection.remoteAddress,
+  };
+  req.app.set(state, stateObj);
 
+  res.json(stateObj);
+}
 module.exports = {
   register,
   logIn,
   logOut,
   getUser,
+  startAuthSession,
 };
