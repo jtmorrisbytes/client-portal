@@ -125,57 +125,76 @@ async function register(req, res) {
 }
 
 async function logIn(req, res) {
-  console.log("log in requested");
-  let { email, password } = req.body;
-  if (!email) {
-    console.warn("/api/auth/login: email was missing from request");
+  console.log("/api/auth/login: login requested user object", req.body.user);
+  try {
+    let { email, password } = req.body.user;
+    if (!email) {
+      console.warn("/api/auth/login: email was missing from request");
 
-    res.status(400).json({
-      message: MESSAGE_BAD_REQUEST,
-      reason: REASON.LOGIN.EMAIL.MISSING,
-    });
-  } else if (!password) {
-    console.warn("/api/auth/login: password was missing from request");
-    console.dir(req.body);
-    console.dir(req.query);
+      res.status(400).json({
+        message: MESSAGE_BAD_REQUEST,
+        reason: REASON.LOGIN.EMAIL.MISSING,
+      });
+    } else if (!password) {
+      console.warn("/api/auth/login: password was missing from request");
+      console.dir(req.body);
+      console.dir(req.query);
 
-    res.status(400).json({
-      message: MESSAGE_BAD_REQUEST,
-      reason: REASON.LOGIN.PASSWORD.MISSING,
-    });
-  } else {
-    console.log("searching database for username");
-    let result = await req.app.get("db").user.getByEmail(email);
-    if (result.length === 0) {
-      console.warn(
-        `/api/auth/login: user '${email.substr(
-          0,
-          email.indexOf("@") - 2
-        )}' not found`
-      );
-      res.status(401).json({
-        message: MESSAGE_NOT_AUTHORIZED,
-        reason: REASON.USER.NOT_FOUND,
+      res.status(400).json({
+        message: MESSAGE_BAD_REQUEST,
+        reason: REASON.LOGIN.PASSWORD.MISSING,
       });
     } else {
-      let user = result[0];
-      console.log("/api/auth/login user found, comparing hash");
-      authenticated = await bcrypt.compare(
-        Buffer.from(password).toString("base64"),
-        user.hash
-      );
-      if (authenticated) {
-        console.log("logging in user with id:", user);
-        req.session.user_id = user.users_id;
-        res.json(req.session);
-      } else {
-        console.warn("/api/auth/login recieved an invalid password");
+      console.log("searching database for username");
+      let result = await req.app.get("db").user.getByEmail(email);
+      if (result.length === 0) {
+        console.warn(
+          `/api/auth/login: user '${email.substr(
+            0,
+            email.indexOf("@") - 2
+          )}' not found`
+        );
         res.status(401).json({
           message: MESSAGE_NOT_AUTHORIZED,
-          reason: REASON.LOGIN.PASSWORD.MISSING,
+          reason: REASON.USER.NOT_FOUND,
         });
+      } else {
+        let user = result[0];
+        console.log("/api/auth/login user found, comparing hash");
+        authenticated = await bcrypt.compare(
+          Buffer.from(password).toString("base64"),
+          user.hash
+        );
+        if (authenticated) {
+          console.log("logging in user with id:", user);
+          req.session.user_id = user.users_id;
+          res.json(req.session);
+        } else {
+          console.warn("/api/auth/login recieved an invalid password");
+          res.status(401).json({
+            message: MESSAGE_NOT_AUTHORIZED,
+            reason: REASON.LOGIN.PASSWORD.MISSING,
+          });
+        }
       }
     }
+  } catch (e) {
+    process.stdout.write("Failed to log in user ");
+    let errRes = {
+      message: MESSAGE.GENERAL_FAILURE,
+      reason: REASON.ERROR.UNKOWN,
+      error: e,
+    };
+    if (e instanceof TypeError) {
+      process.stdout.write("because of a TypeError");
+      errRes.reason = REASON.ERROR.TYPE;
+    }
+    if (e instanceof ReferenceError) {
+      process.stdout.write("because of a ReferenceError");
+      errRes.reason = REASON.ERROR.REFERENCE;
+    }
+    process.stdout.write(" with stacktrace\n" + inspect(e));
+    res.status(500).json(errRes);
   }
 }
 async function logOut(req, res) {

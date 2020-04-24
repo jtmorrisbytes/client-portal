@@ -106,7 +106,7 @@ describe("When the app tries to authenticate", function () {
         .post("/api/auth/login")
         .send({
           state,
-          user: { email: testUser.email, password: testUser.password },
+          user: { email: testUser.email, password: strongPassword },
         })
         .expect(200, (err, res) => {
           if (err) {

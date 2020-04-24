@@ -11,7 +11,17 @@ const https = require("https");
 const constants = require("constants");
 
 global.log =
-  process.env.NODE_ENV === "production" ? function () {} : console.log;
+  process.env.NODE_ENV === "production"
+    ? function () {}
+    : function (...rest) {
+        let date = new Date();
+        console.log(
+          `${date.getUTCHours()}:${date.getUTCMinutes}:${date.getUTCSeconds}.${
+            date.getUTCMilliseconds
+          }`,
+          ...rest
+        );
+      };
 global.debug =
   process.env.NODE_ENV === "production" ? function () {} : console.debug;
 let {
