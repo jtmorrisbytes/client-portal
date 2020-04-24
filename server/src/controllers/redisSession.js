@@ -35,6 +35,27 @@ function RedisSession(config) {
       .digest("hex");
   }
   return (function (_this) {
+    async function destroy(sessionID, req, res) {
+      if (sessionID) {
+        req.app.set(sessionID, undefined);
+        _this.client.del(sessionID, (err, reply) => {
+          if (err) {
+            console.error("an error occurred deleting a session", err);
+          } else if (reply === "OK") {
+            console.log(
+              "sucessfully updated session beginning with " +
+                sessionID.substring(0, 5)
+            );
+            res.removeListener("close", update);
+            res.removeListener("finish", update);
+            if (req.session) {
+              req.session = null;
+            }
+            sessionID = null;
+          }
+        });
+      }
+    }
     return function SessionHandler(req, res, next) {
       let sessionID = req.query.sessionID || req.body.sessionID;
 
@@ -61,27 +82,7 @@ function RedisSession(config) {
           }
         }
       };
-      async function destroy() {
-        if (sessionID) {
-          req.app.set(sessionID, undefined);
-          _this.client.del(sessionID, (err, reply) => {
-            if (err) {
-              console.error("an error occurred deleting a session", err);
-            } else if (reply === "OK") {
-              console.log(
-                "sucessfully updated session beginning with " +
-                  sessionID.substring(0, 5)
-              );
-              res.removeListener("close", update);
-              res.removeListener("finish", update);
-              if (req.session) {
-                req.session = null;
-              }
-              sessionID = null;
-            }
-          });
-        }
-      }
+
       var initialSession = {
         update,
         destroy,

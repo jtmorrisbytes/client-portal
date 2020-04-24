@@ -23,7 +23,8 @@ const basePath = "/auth";
      * the client will include the random state variable in the next step of the request
      * 
 */
-// router.post("/", startAuthSession);
+router.post("/", startAuthSession);
+
 router.get("/user", getUser);
 
 // router.use(checkTimeStamp);
