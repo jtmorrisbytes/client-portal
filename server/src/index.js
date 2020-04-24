@@ -16,9 +16,7 @@ global.log =
     : function (...rest) {
         let date = new Date();
         console.log(
-          `${date.getUTCHours()}:${date.getUTCMinutes}:${date.getUTCSeconds}.${
-            date.getUTCMilliseconds
-          }`,
+          `[Time: ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}.${date.getMilliseconds()}]`,
           ...rest
         );
       };
@@ -44,7 +42,7 @@ log("NODE_ENV is ", NODE_ENV || null);
 //   console.error(
 //     "the react app client id has not been set. please set the react app client id"
 //   );
-//   console.log(config);
+//   log(config);
 //   process.exit(-1);
 // }
 
@@ -139,7 +137,7 @@ async function main() {
     let db = await massive(massive_config);
     app.set("db", db);
   } catch (e) {
-    console.log("connection failed:", e);
+    log("connection failed:", e);
     process.exit(-1);
   }
   if (NODE_ENV.includes("dev") || NODE_ENV.includes("prod")) {

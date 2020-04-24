@@ -14,16 +14,16 @@ const defaultConfig = {
 };
 
 function RedisSession(config) {
-  console.log("redis session initialized with config", config);
+  log("redis session initialized with config", config);
   config = config || defaultConfig;
-  console.log("config defaulted to ", config);
+  log("config defaulted to ", config);
   this.sessionConfig = config.session;
   this.redisConfig = config.redis;
   this.client = redis.createClient(this.redisConfig);
 
   //create the client
   // this.session = new Session(this.client);
-  // console.log("closure creator recieved client", client);
+  // log("closure creator recieved client", client);
   this.set = util.promisify(this.client.set).bind(this.client);
   this.del = util.promisify(this.client.del).bind(this.client);
   this.get = util.promisify(this.client.get).bind(this.client);
@@ -42,7 +42,7 @@ function RedisSession(config) {
           if (err) {
             console.error("an error occurred deleting a session", err);
           } else if (reply === "OK") {
-            console.log(
+            log(
               "sucessfully updated session beginning with " +
                 sessionID.substring(0, 5)
             );
@@ -61,7 +61,7 @@ function RedisSession(config) {
 
       let update = async function update() {
         if (req.session && (req.session || {}).sessionID) {
-          console.log("update redis session requested", sessionID);
+          log("update redis session requested", sessionID);
           if (!equal(req.session, initialSession)) {
             let reply = await _this.set(
               sessionID,
@@ -70,7 +70,7 @@ function RedisSession(config) {
               _this.sessionConfig.maxAge
             );
             if (reply === "OK") {
-              console.log("successfully updated session with id", sessionID);
+              log("successfully updated session with id", sessionID);
             } else {
               console.warn(
                 "A potential error occurred when updating the session",

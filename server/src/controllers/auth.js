@@ -29,7 +29,7 @@ async function register(req, res) {
       zip,
       password,
     } = req.body.user;
-    console.log("/api/auth/register called");
+    log("/api/auth/register called");
     console.dir(req.body);
     console.dir(req.query);
     const db = req.app.get("db");
@@ -67,13 +67,13 @@ async function register(req, res) {
       return;
     }
     if (process.env.NIST_TOKEN) {
-      console.log("attempting NIST check with token ", process.env.NIST_TOKEN);
+      log("attempting NIST check with token ", process.env.NIST_TOKEN);
       let nistHash = sha1(password);
       let { found } = await axios.get(
         NIST.URL + nistHash + `?api_key=${process.env.NIST_TOKEN}`
       );
       if (found) {
-        console.log(
+        log(
           "Password found in NIST Database, Refusing to allow password"
         );
         res.status(400).json({
@@ -83,7 +83,7 @@ async function register(req, res) {
         });
         return;
       }
-      console.log("Password not found in NIST Database. continuing");
+      log("Password not found in NIST Database. continuing");
     }
     let encoded = Buffer.from(password).toString("base64");
     let hash = await bcrypt.hash(encoded, await bcrypt.genSalt(15));
@@ -99,7 +99,7 @@ async function register(req, res) {
       zip
     );
     let user = result[0];
-    console.log("/api/auth/register DB create user result", user);
+    log("/api/auth/register DB create user result", user);
     await req.session.create();
     req.session.user = {
       id: user.users_id,
@@ -125,7 +125,7 @@ async function register(req, res) {
 }
 
 async function logIn(req, res) {
-  console.log("/api/auth/login: login requested user object", req.body.user);
+  log("/api/auth/login: login requested user object", req.body.user);
   try {
     let { email, password } = req.body.user;
     if (!email) {
@@ -145,7 +145,7 @@ async function logIn(req, res) {
         reason: REASON.LOGIN.PASSWORD.MISSING,
       });
     } else {
-      console.log("searching database for username");
+      log("searching database for username");
       let result = await req.app.get("db").user.getByEmail(email);
       if (result.length === 0) {
         console.warn(
@@ -160,13 +160,13 @@ async function logIn(req, res) {
         });
       } else {
         let user = result[0];
-        console.log("/api/auth/login user found, comparing hash");
+        log("/api/auth/login user found, comparing hash");
         authenticated = await bcrypt.compare(
           Buffer.from(password).toString("base64"),
           user.hash
         );
         if (authenticated) {
-          console.log("logging in user with id:", user);
+          log("logging in user with id:", user);
           req.session.user_id = user.users_id;
           res.json(req.session);
         } else {
@@ -210,7 +210,7 @@ function checkAuthState(req, res, next) {
   // const stateObj = req.app.get(req.query.state||req.body.state);
   // if(!stateObj)
   // const { timestamp, state, ipAddr } = auth || {};
-  console.log(
+  log(
     "Checkauthstate called. checking query and body",
     req.query.state,
     req.body.state
@@ -225,7 +225,7 @@ function checkAuthState(req, res, next) {
   }
   let state = req.app.get(req.query.state || req.body.state);
   if (!state) {
-    console.log(state, req.query.state);
+    log(state, req.query.state);
     res.status(401).json({
       message: MESSAGE_NOT_AUTHORIZED,
       reason: REASON.AUTH.STATE_NOT_FOUND,
