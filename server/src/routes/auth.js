@@ -23,12 +23,12 @@ const basePath = "/auth";
      * the client will include the random state variable in the next step of the request
      * 
 */
-router.post("/", startAuthSession);
+// router.post("/", startAuthSession);
 router.get("/user", getUser);
 
 // router.use(checkTimeStamp);
-router.post("/register", checkAuthState, register);
-router.post("/login", checkAuthState, logIn);
+router.post("/register", register);
+router.post("/login", logIn);
 // router.post("/logout", logOut);
 
 module.exports = { router, basePath, controller: { logIn, logOut, register } };

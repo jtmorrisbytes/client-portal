@@ -53,18 +53,26 @@ async function register(req, res) {
       });
       return;
     } else if (process.env.NIST_TOKEN) {
+      console.log("attempting NIST check with token ", process.env.NIST_TOKEN);
       let nistHash = sha1(password);
-      let { found } = await axios.get(NIST.URL + nistHash, {
-        headers: {
-          Authentication: ` ${process.env.NIST_TOKEN}`,
-        },
-      });
-      if (found) {
-        res.status(400).json({
-          message: NIST.MESSAGE,
-          reason: NIST.REASON,
-          info: "https://pages.nist.gov/800-63-3/",
-        });
+      try {
+        let { found } = await axios.get(
+          NIST.URL + nistHash + `?api_key=${process.env.NIST_TOKEN}`
+          // {
+          //   headers: {
+          //     Authentication: `${process.env.NIST_TOKEN}`,
+          //   },
+          // }
+        );
+        if (found) {
+          res.status(400).json({
+            message: NIST.MESSAGE,
+            reason: NIST.REASON,
+            info: "https://pages.nist.gov/800-63-3/",
+          });
+        }
+      } catch (e) {
+        console.warn("NIST password check failed...", e);
       }
     }
     let encoded = Buffer.from(password).toString("base64");
@@ -103,68 +111,7 @@ async function register(req, res) {
     }
   }
 }
-async function checkAuthState(req, res, next) {
-  // let { auth } = req.session.get();
-  req.session.hello = "world";
-  console.log(
-    "checking if req.session works, session.get() should return everything or undefined"
-  );
-  // res.json(req.session);
-  return;
-  const { timestamp, state, ipAddr } = auth || {};
-  let currentTimestamp = Date.now();
-  if (timestamp && state && ipAddr) {
-    // if there is already an auth session
-    if (currentTimestamp > timestamp + MAX_ELAPSED_REQUEST_TIME) {
-      req.session.destroy();
-      res.clearCookie("connect.sid");
-      res.status(401).json({
-        message: MESSAGE_NOT_AUTHORIZED,
-        reason: REASON.AUTH.SESSION_EXPIRED,
-      });
-    } else if (
-      req.connection.remoteAddress &&
-      req.connection.remoteAddress != ipAddr
-    ) {
-      // if the user jumps between devices or there is an ip address mismatch, clear session and cookie
-      req.session.destroy();
-      res.clearCookie("connect.sid");
-      res.status(401).json({
-        message: MESSAGE_NOT_AUTHORIZED,
-        reason: REASON.AUTH.IP_MISMATCH,
-      });
-    } else if (state && !req.query.state) {
-      res.status(401).json({
-        message: MESSAGE_NOT_AUTHORIZED,
-        reason: REASON.AUTH.STATE_MISSING,
-        path: "query",
-      });
-    } else if (state != req.query.state) {
-      console.log(state, req.query.state);
-      res.status(401).json({
-        message: MESSAGE_NOT_AUTHORIZED,
-        reason: REASON.AUTH.STATE_MISMATCH,
-      });
-    } else {
-      next();
-    }
-  } else if (!state) {
-    res.status(400).json({
-      message: MESSAGE_BAD_REQUEST,
-      reason: REASON.AUTH.STATE_INVALID,
-      redirectTo: "/api/auth/",
-      redirectMethod: "POST",
-    });
-  } else {
-    res.status(401).json({
-      message: MESSAGE_NOT_AUTHORIZED,
-      reason: REASON.AUTH.STATE_INVALID,
-      description: "You must POST '/' on this route first",
-      redirectTo: "/api/auth",
-      redirectMethod: "POST",
-    });
-  }
-}
+
 async function logIn(req, res) {
   console.log("log in requested");
   let { email, password } = req.body;
@@ -209,31 +156,16 @@ async function logIn(req, res) {
 }
 async function logOut(req, res) {
   req.session.destroy();
-  res.clearCookie("connect.sid");
   res.sendStatus(200);
 }
 function getUser(req, res) {
   let user = (req.session || {}).user || null;
   res.json({ user: user });
 }
-function startAuthSession(req, res) {
-  // if we already have a session, clear the session
-  // and restart it
-  console.log(req.socket.remoteAddress);
-  req.session.user = null;
-  req.session.auth = {
-    timestamp: Date.now(),
-    //record the time that the auth session
-    state: crypto.randomBytes(64).toString("base64"),
-    ipAddr: req.connection.remoteAddress,
-  };
-  res.json(req.session);
-}
+
 module.exports = {
   register,
   logIn,
   logOut,
-  startAuthSession,
   getUser,
-  checkAuthState,
 };
