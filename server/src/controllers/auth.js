@@ -73,9 +73,7 @@ async function register(req, res) {
         NIST.URL + nistHash + `?api_key=${process.env.NIST_TOKEN}`
       );
       if (found) {
-        log(
-          "Password found in NIST Database, Refusing to allow password"
-        );
+        log("Password found in NIST Database, Refusing to allow password");
         res.status(400).json({
           message: NIST.MESSAGE,
           reason: NIST.REASON,
@@ -123,9 +121,19 @@ async function register(req, res) {
     process.stdout.write("with stacktrace:\n" + inspect(e) + "\n");
   }
 }
-
+async function getSession(req, res) {
+  try {
+    let session = req.session || null;
+    res.send(session);
+  } catch (e) {
+    console.error("Failed to get session");
+  }
+}
 async function logIn(req, res) {
-  log("/api/auth/login: login requested user object", req.body.user);
+  log(
+    "/api/auth/login: login requested user object",
+    req.body.user || "NOT FOUND"
+  );
   try {
     let { email, password } = req.body.user;
     if (!email) {
@@ -166,7 +174,7 @@ async function logIn(req, res) {
           user.hash
         );
         if (authenticated) {
-          log("logging in user with id:", user);
+          log("logging in user with id:", user.users_id);
           req.session.user_id = user.users_id;
           res.json(req.session);
         } else {

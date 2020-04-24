@@ -43,13 +43,62 @@ function expectErrorMessages(res) {
   );
   expect(res.body.reason).toEqual(jasmine.any(String));
 }
-describe("When the app tries to authenticate", function () {
+function registerUser(
+  done,
+  serverInst,
+  state,
+  testUser,
+  timestamp,
+  ipAddr,
+  callback
+) {
+  request(serverInst)
+    .post("/api/auth/register")
+    .send({
+      state,
+      user: testUser,
+    })
+    .expect("Content-Type", /json/)
+    .expect(200, (err, registerRes) => {
+      if (err) {
+        expectErrorMessages(registerRes);
+        done(err);
+      } else {
+        expect(registerRes.body).toBeDefined(
+          "The server should respond with an object in the body"
+        );
+        expect(registerRes.body).toEqual(jasmine.any(Object));
+        const body = registerRes.body;
+        expect(body.session).toBeDefined(
+          "The server should respond with a property called session inside of body"
+        );
+        expect(body.session).toEqual(jasmine.any(Object));
+        const { session } = body;
+        expect(session.sessionID).toBeDefined(
+          "The server should respond with property session ID on body.session"
+        );
+        const { user } = session;
+        expect(user).toBeDefined();
+        expect(user.id).toBeDefined();
+        expect(user.id).toBeGreaterThanOrEqual(0);
+        if (callback) {
+          callback(serverInst, state, testUser, timestamp, ipAddr);
+        } else {
+          done();
+        }
+      }
+    });
+}
+function genRandomEmail() {
+  return `johnDoe${Math.floor(Math.random() * 10000)}@gmail.com`;
+}
+describe("When the user tries to authenicate", function () {
   // console.dir(app);
 
   const testUser = {
     firstName: "Jordan",
     lastName: "Morris",
-    email: `johnDoe${Math.floor(Math.random() * 10000)}@gmail.com`,
+    email: genRandomEmail(),
     address: "123 Software way",
     city: "Silicon Valley",
     state: "California",
@@ -60,76 +109,66 @@ describe("When the app tries to authenticate", function () {
   let badPassword = "password";
   let strongPassword = "j}4Sf_td'pQ%";
   let testSessionID = null;
-  it("should be able to POST /", async (done) => {
+  it("should be able to start an authentication session", async (done) => {
     startAuthSession(done);
   });
   it("should be able to register after starting an auth session", (done) => {
     startAuthSession(done, (serverInst, state, timestamp, ipAddr) => {
-      request(serverInst)
-        .post("/api/auth/register")
-        .send({
-          state,
-          user: { ...testUser, password: strongPassword },
-        })
-        .expect("Content-Type", /json/)
-        .expect(200, (err, registerRes) => {
-          if (err) {
-            expectErrorMessages(registerRes);
-            done(err);
-          } else {
-            expect(registerRes.body).toBeDefined(
-              "The server should respond with an object in the body"
-            );
-            expect(registerRes.body).toEqual(jasmine.any(Object));
-            const body = registerRes.body;
-            expect(body.session).toBeDefined(
-              "The server should respond with a property called session inside of body"
-            );
-            expect(body.session).toEqual(jasmine.any(Object));
-            const { session } = body;
-            expect(session.sessionID).toBeDefined(
-              "The server should respond with property session ID on body.session"
-            );
-            const { user } = body;
-            expect(user).toBeDefined();
-            expect(user.id).toBeDefined();
-            expect(user.id).toBeGreaterThanOrEqual(0);
-
-            done(err);
-          }
-        });
+      registerUser(
+        done,
+        serverInst,
+        state,
+        { ...testUser, strongPassword },
+        ipAddr
+      );
     });
   });
-  it("should let the user log in", (done) => {
-    startAuthSession(done, (server, state, timestamp, ipAddr) => {
-      request(server)
-        .post("/api/auth/login")
-        .send({
+  describe("the user should be able to login after registering", () => {
+    testUser.email = genRandomEmail();
+    it("and the server should respond with 200 and the correct response body", (done) => {
+      startAuthSession(done, (server, state, timestamp, ipAddr) => {
+        registerUser(
+          done,
+          server,
           state,
-          user: { email: testUser.email, password: strongPassword },
-        })
-        .expect(200, (err, res) => {
-          if (err) {
-            console.error("an error occurred while trying to log in", err);
-            expectErrorMessages(res);
-            done(err);
-          } else {
-            expect(res.body).toBeDefined(
-              "The server should respond with an object in the body"
-            );
-            expect(res.body).toEqual(jasmine.any(Object));
-            expect(res.body.session).toBeDefined(
-              "The server should respond with property session in the body"
-            );
-            expect(res.body.session).toEqual(jasmine.any(Object));
-            let user = ((res.body || {}).session || {}).user;
+          testUser,
+          timestamp,
+          ipAddr,
+          (serverInst, state, testUser, timestamp, ipAddr) => {
+            request(server)
+              .post("/api/auth/login")
+              .send({
+                state,
+                user: { email: testUser.email, password: strongPassword },
+              })
+              .expect(200, (err, res) => {
+                if (err) {
+                  console.error(
+                    "an error occurred while trying to log in",
+                    err
+                  );
+                  expectErrorMessages(res);
+                  done(err);
+                } else {
+                  expect(res.body).toBeDefined(
+                    "The server should respond with an object in the body"
+                  );
+                  expect(res.body).toEqual(jasmine.any(Object));
+                  expect(res.body.session).toBeDefined(
+                    "The server should respond with property session in the body"
+                  );
+                  expect(res.body.session).toEqual(jasmine.any(Object));
+                  let user = ((res.body || {}).session || {}).user;
 
-            expect(user).toBeDefined(
-              "The sever should respond with property user in session"
-            );
-            expect(user).toEqual(jasmine.any(String));
+                  expect(user).toBeDefined(
+                    "The sever should respond with property user in session"
+                  );
+                  expect(user).toEqual(jasmine.any(String));
+                }
+              });
           }
-        });
+        );
+      });
     });
   });
 });

@@ -8,7 +8,7 @@ const defaultConfig = {
     port: process.env.REDIS_PORT || 6379,
   },
   session: {
-    maxAge: 60 * 3,
+    maxAge: 60 * 5,
     prefix: "sess",
   },
 };

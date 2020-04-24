@@ -16,7 +16,7 @@ global.log =
     : function (...rest) {
         let date = new Date();
         console.log(
-          `[Time: ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}.${date.getMilliseconds()}]`,
+          `[Time: ${date.getHours()}H${date.getMinutes()}M ${date.getSeconds()}S ${date.getMilliseconds()}MS]`,
           ...rest
         );
       };
