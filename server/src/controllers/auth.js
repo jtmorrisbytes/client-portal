@@ -103,8 +103,14 @@ async function register(req, res) {
     }
   }
 }
-function checkAuthState(req, res, next) {
-  let { auth } = req.session;
+async function checkAuthState(req, res, next) {
+  // let { auth } = req.session.get();
+  req.session.hello = "world";
+  console.log(
+    "checking if req.session works, session.get() should return everything or undefined"
+  );
+  res.json(req.session);
+  return;
   const { timestamp, state, ipAddr } = auth || {};
   let currentTimestamp = Date.now();
   if (timestamp && state && ipAddr) {

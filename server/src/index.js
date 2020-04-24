@@ -80,25 +80,25 @@ const httpsOpts = {
 
 // use express.json as json parser
 app.use(express.json());
-
+app.use(new require("./controllers/redisSession")());
 // set up express session
-const redis = require("redis");
-const RedisStore = require("connect-redis")(session);
-app.use(cookieparser());
-app.use(
-  session({
-    store: new RedisStore({ client: redis.createClient() }),
-    resave: false,
-    saveUninitialized: false,
-    secret: SESSION_SECRET,
-    cookie: {
-      secure: true,
-      httpOnly: false,
-      maxAge: +SESSION_COOKIE_MAXAGE || 0,
-    },
-    unset: "destroy",
-  })
-);
+
+// const RedisStore = require("connect-redis")(session);
+// app.use(cookieparser());
+// app.use(
+//   session({
+//     store: new RedisStore({ client: redis.createClient() }),
+//     resave: false,
+//     saveUninitialized: false,
+//     secret: SESSION_SECRET,
+//     cookie: {
+//       secure: true,
+//       httpOnly: false,
+//       maxAge: +SESSION_COOKIE_MAXAGE || 0,
+//     },
+//     unset: "destroy",
+//   })
+// );
 
 if (process.NODE_ENV === "production") {
   app.use(morgan("tiny"));
