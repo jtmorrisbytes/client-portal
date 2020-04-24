@@ -28,8 +28,8 @@ router.post("/", startAuthSession);
 router.get("/user", getUser);
 
 // router.use(checkTimeStamp);
-router.post("/register", register);
-router.post("/login", logIn);
+router.post("/register", checkAuthState, register);
+router.post("/login", checkAuthState, logIn);
 // router.post("/logout", logOut);
 
 module.exports = { router, basePath, controller: { logIn, logOut, register } };

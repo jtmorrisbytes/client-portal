@@ -25,85 +25,90 @@ async function register(req, res) {
     state,
     zip,
     password,
-  } = req.body;
+  } = req.body.user || {
+    firstName: null,
+    lastName: null,
+    phoneNumber: null,
+    city: null,
+    state: null,
+    zip: null,
+    password: null,
+  };
   const db = req.app.get("db");
   if (!email) {
-    res.status(400).json({ error: "field email is required" });
-  } else if (!validateEmail(email)) {
-    res.status(400).json({ error: `invalid email '${email}'` });
+    res.status(400).json({ message: "field email is required" });
     return;
-  } else {
-    let result = await db.user.getByEmail(email);
-    if (result.length > 0) {
-      res.status(400).json({ error: `email ${email} is already in use` });
-      return;
-    }
+  }
+  if (!validateEmail(email)) {
+    res.status(400).json({ message: `invalid email '${email}'` });
+    return;
+  }
+  let result = await db.user.getByEmail(email);
+  if (result.length > 0) {
+    res.status(400).json({ message: `email ${email} is already in use` });
+    return;
   }
   if (!password) {
-    res.status(400).json({ error: "field password is required" });
+    res.status(400).json({ message: "field password is required" });
     return;
-  } else {
-    // email is marked as a unique, required field. if it already exists, the database will throw an error
-    // run
-    let passwordLocal = validatePasswordLocally(password);
-    if (passwordLocal.isValid === false) {
-      res.status(400).json({
-        message: passwordLocal.description,
-        reason: passwordLocal.reason,
-      });
-      return;
-    } else if (process.env.NIST_TOKEN) {
-      console.log("attempting NIST check with token ", process.env.NIST_TOKEN);
-      let nistHash = sha1(password);
-      try {
-        let { found } = await axios.get(
-          NIST.URL + nistHash + `?api_key=${process.env.NIST_TOKEN}`
-        );
-        if (found) {
-          res.status(400).json({
-            message: NIST.MESSAGE,
-            reason: NIST.REASON,
-            info: "https://pages.nist.gov/800-63-3/",
-          });
-        }
-      } catch (e) {
-        console.warn("NIST password check failed...", e);
-      }
-    }
-    let encoded = Buffer.from(password).toString("base64");
-    let salt = await bcrypt.genSalt(15);
-    let hash = await bcrypt.hash(encoded, salt);
+  }
+  // email is marked as a unique, required field. if it already exists, the database will throw an error
+  // run
+  let passwordLocal = validatePasswordLocally(password);
+  if (passwordLocal.isValid === false) {
+    res.status(400).json({
+      message: passwordLocal.description,
+      reason: passwordLocal.reason,
+    });
+    return;
+  }
+  if (process.env.NIST_TOKEN) {
+    console.log("attempting NIST check with token ", process.env.NIST_TOKEN);
+    let nistHash = sha1(password);
     try {
-      let result = await db.user.create(
-        firstName,
-        lastName,
-        hash,
-        email,
-        phoneNumber,
-        streetAddress,
-        city,
-        state,
-        zip
+      let { found } = await axios.get(
+        NIST.URL + nistHash + `?api_key=${process.env.NIST_TOKEN}`
       );
-      req.session.user = {
-        email,
-        timestamp: Date.now(),
-        ip: req.connection.remoteAddress,
-      };
-      req.session.destroy;
-      res.json(result);
-    } catch (e) {
-      switch (e.code) {
-        case "23505":
-          res.status(400);
-          break;
-        default:
-          res.status(500);
+      if (found) {
+        res.status(400).json({
+          message: NIST.MESSAGE,
+          reason: NIST.REASON,
+          info: "https://pages.nist.gov/800-63-3/",
+        });
       }
-      res.json({ error: e.detail });
-
-      console.error(e);
+    } catch (e) {
+      console.warn("NIST password check failed...", e);
     }
+  }
+  let encoded = Buffer.from(password).toString("base64");
+  let hash = await bcrypt.hash(encoded, await bcrypt.genSalt(15));
+  try {
+    let result = await db.user.create(
+      firstName,
+      lastName,
+      hash,
+      email,
+      phoneNumber,
+      streetAddress,
+      city,
+      state,
+      zip
+    );
+    console.log("Got result from database", result);
+    await req.session.create();
+    req.session.user = result[0] || null;
+    res.json({ session: req.session });
+  } catch (e) {
+    switch (e.code) {
+      case "23505":
+        res.status(400);
+        break;
+      default:
+        res.status(500);
+    }
+    res.json({ message: e.detail });
+
+    console.error(e);
   }
 }
 
@@ -164,6 +169,55 @@ function getUser(req, res) {
   let user = (req.session || {}).user || null;
   res.json({ user: user });
 }
+
+function checkAuthState(req, res, next) {
+  // const stateObj = req.app.get(req.query.state||req.body.state);
+  // if(!stateObj)
+  // const { timestamp, state, ipAddr } = auth || {};
+  console.log(
+    "Checkauthstate called. checking query and body",
+    req.query.state,
+    req.body.state
+  );
+  if (!req.query.state && !req.body.state) {
+    res.status(401).json({
+      message: MESSAGE_NOT_AUTHORIZED,
+      reason: REASON.AUTH.STATE_MISSING,
+      path: "query",
+    });
+    return;
+  }
+  let state = req.app.get(req.query.state || req.body.state);
+  if (!state) {
+    console.log(state, req.query.state);
+    res.status(401).json({
+      message: MESSAGE_NOT_AUTHORIZED,
+      reason: REASON.AUTH.STATE_NOT_FOUND,
+    });
+    return;
+  }
+  if (state.ipAddr != req.connection.remoteAddress) {
+    req.app.set(state.state, undefined);
+    res.status(401).json({
+      message: MESSAGE_NOT_AUTHORIZED,
+      reason: REASON.AUTH.IP_MISMATCH,
+    });
+    return;
+  }
+  let currentTimestamp = Date.now();
+  if (currentTimestamp > state.timestamp + MAX_ELAPSED_REQUEST_TIME) {
+    req.app.set(state.state, undefined);
+    res.status(401).json({
+      message: MESSAGE_NOT_AUTHORIZED,
+      reason: REASON.AUTH.SESSION_EXPIRED,
+    });
+    // if there is already an auth session
+    return;
+    // if the user jumps between devices or there is an ip address mismatch, clear session and cookie
+  }
+  next();
+}
+
 function startAuthSession(req, res) {
   // if we already have a session, clear the session
   // and restart it
@@ -183,4 +237,5 @@ module.exports = {
   logOut,
   getUser,
   startAuthSession,
+  checkAuthState,
 };
