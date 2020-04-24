@@ -109,7 +109,7 @@ async function checkAuthState(req, res, next) {
   console.log(
     "checking if req.session works, session.get() should return everything or undefined"
   );
-  res.json(req.session);
+  // res.json(req.session);
   return;
   const { timestamp, state, ipAddr } = auth || {};
   let currentTimestamp = Date.now();
