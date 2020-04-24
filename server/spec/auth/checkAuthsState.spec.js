@@ -69,7 +69,7 @@ describe("When the app tries to authenticate", function () {
         .post("/api/auth/register")
         .send({
           state,
-          user: { email: testUser.email, password: strongPassword },
+          user: { ...testUser, password: strongPassword },
         })
         .expect("Content-Type", /json/)
         .expect(200, (err, registerRes) => {

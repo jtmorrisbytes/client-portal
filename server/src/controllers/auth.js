@@ -10,6 +10,7 @@ const {
   MESSAGE_BAD_REQUEST,
   REASON,
   MESSAGE_NOT_FOUND,
+  MESSAGE,
   PASSWORD,
 } = require("../../../lib/constants.js");
 const { MAX_ELAPSED_REQUEST_TIME } = require("../../../lib/constants.js");
@@ -28,22 +29,31 @@ async function register(req, res) {
       zip,
       password,
     } = req.body.user;
+    console.log("/api/auth/register called");
+    console.dir(req.body);
+    console.dir(req.query);
     const db = req.app.get("db");
     if (!email) {
-      res.status(400).json({ message: "field email is required" });
+      res.status(400).json({
+        message: "field email is required",
+        reason: REASON.REQUIRED.FIELD,
+      });
       return;
     }
     if (!validateEmail(email)) {
       res.status(400).json({ message: `invalid email '${email}'` });
       return;
     }
-    let result = await db.user.getByEmail(email);
-    if (result.length > 0) {
+    let dbResult = await db.user.getByEmail(email);
+    if (dbResult.length > 0) {
       res.status(400).json({ message: `email ${email} is already in use` });
       return;
     }
     if (!password) {
-      res.status(400).json({ message: "field password is required" });
+      res.status(400).json({
+        message: "field password is required",
+        reason: REASON.REQUIRED.FIELD,
+      });
       return;
     }
     // email is marked as a unique, required field. if it already exists, the database will throw an error
@@ -63,12 +73,17 @@ async function register(req, res) {
         NIST.URL + nistHash + `?api_key=${process.env.NIST_TOKEN}`
       );
       if (found) {
+        console.log(
+          "Password found in NIST Database, Refusing to allow password"
+        );
         res.status(400).json({
           message: NIST.MESSAGE,
           reason: NIST.REASON,
           info: "https://pages.nist.gov/800-63-3/",
         });
+        return;
       }
+      console.log("Password not found in NIST Database. continuing");
     }
     let encoded = Buffer.from(password).toString("base64");
     let hash = await bcrypt.hash(encoded, await bcrypt.genSalt(15));
@@ -83,15 +98,29 @@ async function register(req, res) {
       state,
       zip
     );
-    console.log("Got result from database", result);
+    let user = result[0];
+    console.log("/api/auth/register DB create user result", user);
     await req.session.create();
     req.session.user = {
-      id: (result[0] || {}).users_id,
+      id: user.users_id,
     };
     res.json({ session: req.session });
-    console.error(e);
   } catch (e) {
-    console.log("Failed to register user", e);
+    process.stdout.write("Failed to register user ");
+    let errRes = {
+      message: MESSAGE.GENERAL_FAILURE,
+      reason: REASON.ERROR.UNKNOWN,
+      error: e,
+    };
+    if (e instanceof SyntaxError) {
+      process.stdout.write("because of a syntax error");
+      errRes.reason = REASON.ERROR.SYNTAX;
+    } else if (e instanceof TypeError) {
+      process.stdout.write("because of a Type Error");
+      errRes.reason = REASON.ERROR.TYPE;
+    }
+    res.status(500).json(errRes);
+    process.stdout.write("with stacktrace:\n" + inspect(e) + "\n");
   }
 }
 
@@ -100,8 +129,7 @@ async function logIn(req, res) {
   let { email, password } = req.body;
   if (!email) {
     console.warn("/api/auth/login: email was missing from request");
-    console.dir(req.body);
-    console.dir(req.query);
+
     res.status(400).json({
       message: MESSAGE_BAD_REQUEST,
       reason: REASON.LOGIN.EMAIL.MISSING,

@@ -61,9 +61,7 @@ function RedisSession(config) {
 
       let update = async function update() {
         if (req.session && (req.session || {}).sessionID) {
-          console.log("update redis session requested", req.session, sessionID);
-          console.log("redis session object after close", req.session);
-          // console.log("hash compare old, new", oldHash, newHash);
+          console.log("update redis session requested", sessionID);
           if (!equal(req.session, initialSession)) {
             let reply = await _this.set(
               sessionID,
@@ -120,7 +118,6 @@ function RedisSession(config) {
         req.session = { ...initialSession };
         next();
       }
-      console.log("redis session handler called");
       res.on("finish", update);
     };
   })(this);
