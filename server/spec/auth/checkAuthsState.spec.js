@@ -64,6 +64,7 @@ function registerUser(
         expectErrorMessages(registerRes);
         done(err);
       } else {
+        console.log("registration response body", registerRes.body);
         expect(registerRes.body).toBeDefined(
           "The server should respond with an object in the body"
         );
@@ -118,28 +119,28 @@ describe("When the user tries to authenicate", function () {
         done,
         serverInst,
         state,
-        { ...testUser, strongPassword },
+        { ...testUser, password: strongPassword },
+        timestamp,
         ipAddr
       );
     });
   });
   describe("the user should be able to login after registering", () => {
-    testUser.email = genRandomEmail();
     it("and the server should respond with 200 and the correct response body", (done) => {
       startAuthSession(done, (server, state, timestamp, ipAddr) => {
         registerUser(
           done,
           server,
           state,
-          testUser,
+          { ...testUser, password: strongPassword, email: genRandomEmail() },
           timestamp,
           ipAddr,
           (serverInst, state, testUser, timestamp, ipAddr) => {
-            request(server)
+            request(serverInst)
               .post("/api/auth/login")
               .send({
                 state,
-                user: { email: testUser.email, password: strongPassword },
+                user: { email: testUser.email, password: testUser.password },
               })
               .expect(200, (err, res) => {
                 if (err) {
@@ -150,6 +151,10 @@ describe("When the user tries to authenicate", function () {
                   expectErrorMessages(res);
                   done(err);
                 } else {
+                  console.log(
+                    "test: Login user recieved response object",
+                    res.body
+                  );
                   expect(res.body).toBeDefined(
                     "The server should respond with an object in the body"
                   );
@@ -163,7 +168,10 @@ describe("When the user tries to authenicate", function () {
                   expect(user).toBeDefined(
                     "The sever should respond with property user in session"
                   );
-                  expect(user).toEqual(jasmine.any(String));
+                  expect(user).toEqual(jasmine.any(Object));
+                  expect(user.id).toBeDefined("user id must exist on session");
+                  expect(user.id).toEqual(jasmine.any(Number));
+                  done();
                 }
               });
           }

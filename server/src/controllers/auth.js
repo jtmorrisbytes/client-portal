@@ -175,8 +175,11 @@ async function logIn(req, res) {
         );
         if (authenticated) {
           log("logging in user with id:", user.users_id);
-          req.session.user_id = user.users_id;
-          res.json(req.session);
+          await req.session.create();
+          req.session.user = {
+            id: user.users_id,
+          };
+          res.json({ session: req.session });
         } else {
           console.warn("/api/auth/login recieved an invalid password");
           res.status(401).json({
@@ -282,4 +285,5 @@ module.exports = {
   getUser,
   startAuthSession,
   checkAuthState,
+  getSession,
 };
