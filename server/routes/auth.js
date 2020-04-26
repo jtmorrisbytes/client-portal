@@ -8,7 +8,7 @@ const {
   checkAuthState,
 } = require("../controllers/auth");
 // const controller = require("../controllers/auth");
-const { MAX_ELAPSED_REQUEST_TIME } = require("../../../lib/constants.js");
+const { MAX_ELAPSED_REQUEST_TIME } = require("../../lib/constants.js");
 
 const crypto = require("crypto");
 const router = require("express").Router();

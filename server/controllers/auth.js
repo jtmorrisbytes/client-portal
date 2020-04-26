@@ -1,5 +1,5 @@
-const validateEmail = require("../../../lib/validateEmail");
-const validatePasswordLocally = require("../../../lib/validatePassword.js");
+const validateEmail = require("../../lib/validateEmail");
+const validatePasswordLocally = require("../../lib/validatePassword.js");
 const bcrypt = require("bcryptjs");
 const axios = require("axios");
 const sha1 = require("sha1");
@@ -12,8 +12,8 @@ const {
   MESSAGE_NOT_FOUND,
   MESSAGE,
   PASSWORD,
-} = require("../../../lib/constants.js");
-const { MAX_ELAPSED_REQUEST_TIME } = require("../../../lib/constants.js");
+} = require("../../lib/constants.js");
+const { MAX_ELAPSED_REQUEST_TIME } = require("../../lib/constants.js");
 const { NIST } = PASSWORD;
 async function register(req, res) {
   // try to destructure, respond with 500 if it fails

@@ -1,4 +1,4 @@
-const { REASON, MESSAGE_NOT_AUTHORIZED } = require("../../../lib/constants");
+const { REASON, MESSAGE_NOT_AUTHORIZED } = require("../../lib/constants");
 function enforceUserLoggedIn(req, res, next) {
   if (!req.session.user) {
     res.status(401).json({

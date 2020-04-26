@@ -4,11 +4,17 @@
   "description": "",
   "scripts": {
     "test": "npx jasmine",
-    "dev": "npx cross-env NODE_ENV=development DEBUG=true nodemon"
+    "server:dev": "cd server && npm run start:dev",
+    "server:start": "cd server && npm run start",
+    "client:build": "react-scripts build",
+    "client:start": "react-scripts start",
+    "cypress": "npx cypress open",
+    "start": ""
   },
   "eslintConfig": {
     "extends": "react-app"
   },
+  "proxy": "https://localhost:3001/",
   "browserslist": {
     "production": [
       ">0.2%",
@@ -49,6 +55,7 @@
   },
   "private": true,
   "devDependencies": {
+    "concurrently": "^5.2.0",
     "cypress": "^4.4.1",
     "jasmine-node": "^3.0.0",
     "webpack": "^4.42.1",

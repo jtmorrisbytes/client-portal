@@ -7,12 +7,9 @@
   "scripts": {
     "test": "set NODE_ENV=test && jasmine",
     "test:watch": "nodemon --watch spec/** --exec \"npm run test\"",
-    "start:dev": "npm run build:dev &&  node index.js ",
+    "start:dev": "set NODE_ENV=development &&  node index.js ",
     "watch:dev": "nodemon --watch src --exec \"npm run start:dev\"",
-    "start": "npm run build && nodemon",
-    "build:dev": "npx webpack --mode=development",
-    "build:test": "set NODE_ENV=test && npx webpack --mode=none",
-    "build": "npx webpack --mode=production"
+    "start": "set NODE_ENV=production && nodemon"
   },
   "keywords": [],
   "author": "",
@@ -23,6 +20,7 @@
     "bcryptjs": "^2.4.3",
     "connect-redis": "^4.0.4",
     "connect-sqlite3": "^0.9.11",
+    "cookie-parser": "^1.4.5",
     "deep-equal": "^2.0.2",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
