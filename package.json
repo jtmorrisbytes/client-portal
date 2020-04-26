@@ -1,9 +1,9 @@
 {
-  "name": "com.aspiesolutions.client-portal",
+  "name": "@aspiesolutions/client-portal",
   "version": "0.0.1",
   "description": "",
   "scripts": {
-    "test": "npx concurrently --kill-others \\\"npm run-script server:dev\\\" \\\"npm run-script start\\\" \\\"npm run-script cypress\\\"",
+    "test": "set NODE_ENV=development&& npx concurrently --kill-others \"npm run-script server:dev\" \"npm run-script start\" \"npm run-script cypress\"",
     "server:dev": "cd server && npm run start:dev",
     "server:start": "cd server && npm run start",
     "client:build": "react-scripts build",
@@ -40,14 +40,16 @@
   "bugs": {
     "url": "https://github.com/jtmorrisbytes/react-express/issues"
   },
-  "homepage": "https://github.com/jtmorrisbytes/react-express#readme",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "axios": "^0.19.2",
+    "chai-enzyme": "^1.0.0-beta.1",
     "cross-env": "^7.0.2",
     "dotenv": "^8.2.0",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
@@ -55,10 +57,13 @@
   },
   "private": true,
   "devDependencies": {
+    "@cypress/webpack-preprocessor": "^5.1.2",
     "concurrently": "^5.2.0",
     "cypress": "^4.4.1",
-    "jasmine-node": "^3.0.0",
-    "webpack": "^4.42.1",
-    "webpack-cli": "^3.3.11"
+    "cypress-react-unit-test": "^3.3.1",
+    "jasmine-node": "^3.0.0"
+  },
+  "directories": {
+    "lib": "lib"
   }
 }
