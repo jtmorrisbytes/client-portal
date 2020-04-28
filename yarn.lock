@@ -1446,10 +1446,10 @@
     "@types/yargs" "^15.0.0"
     chalk "^3.0.0"
 
-"@jtmorrisbytes/lib@0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@jtmorrisbytes/lib/-/lib-0.0.1.tgz#f24efaa2475311c5d516154ec248e19426d41dc1"
-  integrity sha512-QwYIZMcBeCWGtRvWo4fgCPOiqkKdhUNrL0cV0+QTiLn1oOsSq8AxtVBCWuc8mpGTIYFeeleoMONYl/6FjzNQTA==
+"@jtmorrisbytes/lib@^0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@jtmorrisbytes/lib/-/lib-0.0.6.tgz#9617e3c5ea70d2bb8a5636566eb61b6bcd6a7cc7"
+  integrity sha512-A0QkGkYEbWLKWlqAA3KNIO9piy0xVTEDf6gxEx7Bmd3qdFIZW4nWRtS+VlzLIWNO05K1w6Onr48n9oaK47ODVA==
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
@@ -12021,6 +12021,11 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
+
+typescript@^3.8.3:
+  version "3.8.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.8.3.tgz#409eb8544ea0335711205869ec458ab109ee1061"
+  integrity sha512-MYlEfn5VrLNsgudQTVJeNaQFUAI7DkhnOjdpAp4T+ku1TfQClewlbSuTVHiA+8skNBgaf02TL/kLOvig4y3G8w==
 
 umd@^3.0.0:
   version "3.0.3"

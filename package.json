@@ -40,7 +40,7 @@
     "url": "https://github.com/jtmorrisbytes/react-express/issues"
   },
   "dependencies": {
-    "@jtmorrisbytes/lib": "0.0.1",
+    "@jtmorrisbytes/lib": "^0.0.6",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
@@ -56,7 +56,8 @@
     "react-scripts": "3.4.1",
     "redux": "^4.0.5",
     "redux-promise-middleware": "^6.1.2",
-    "sha1": "^1.1.1"
+    "sha1": "^1.1.1",
+    "typescript": "^3.8.3"
   },
   "private": true,
   "devDependencies": {
