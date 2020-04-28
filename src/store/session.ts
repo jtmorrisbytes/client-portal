@@ -1,6 +1,5 @@
-import type { IUser } from "@jtmorrisbytes/lib/src/User";
 import type { AxiosError } from "axios";
-import { User } from "@jtmorrisbytes/lib/src/User";
+import { User } from "@jtmorrisbytes/lib/dist/User";
 import Axios from "axios";
 
 type Session = {
@@ -8,7 +7,7 @@ type Session = {
     maxAge: Number;
     expires: Date;
   };
-  user: IUser;
+  user: {};
   ipAddr: string;
   loading: boolean;
 };

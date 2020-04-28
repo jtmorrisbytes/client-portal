@@ -15,5 +15,6 @@
     "noEmit": true,
     "jsx": "react"
   },
-  "include": ["src", "./node_modules/@jtmorrisbytes/lib/src"]
+  "include": ["./src"],
+  "exclude": ["**/node_modules/*", "./node_modules/@jtmorrisbytes/lib/src/*"]
 }

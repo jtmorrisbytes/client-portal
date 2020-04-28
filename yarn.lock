@@ -1446,10 +1446,12 @@
     "@types/yargs" "^15.0.0"
     chalk "^3.0.0"
 
-"@jtmorrisbytes/lib@^0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@jtmorrisbytes/lib/-/lib-0.0.6.tgz#9617e3c5ea70d2bb8a5636566eb61b6bcd6a7cc7"
-  integrity sha512-A0QkGkYEbWLKWlqAA3KNIO9piy0xVTEDf6gxEx7Bmd3qdFIZW4nWRtS+VlzLIWNO05K1w6Onr48n9oaK47ODVA==
+"@jtmorrisbytes/lib@^0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@jtmorrisbytes/lib/-/lib-0.0.7.tgz#baf9fb6cfd21a475913b7979dfb7a4adb3d98821"
+  integrity sha512-0CWapX3MhCmNW8ThsOtVvUpIss+wCDLMDZOTs2IT8MMTOTHR5ZPEoKWZecTfWzKPJPxU9AQZyEbWSq/ovATYcQ==
+  dependencies:
+    typescript "^3.8.3"
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
