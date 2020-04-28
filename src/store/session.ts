@@ -1,17 +1,17 @@
+/// <reference path="../../node_modules/@jtmorrisbytes/lib/User/index.d.ts" />
 import type { AxiosError } from "axios";
-import { User } from "@jtmorrisbytes/lib/dist/User";
+import User from "@jtmorrisbytes/lib/User";
 import Axios from "axios";
 
-type Session = {
+export type Session = {
   cookie: {
     maxAge: Number;
     expires: Date;
   };
-  user: {};
+  user: User;
   ipAddr: string;
   loading: boolean;
 };
-
 type AsyncAction = {
   type: String;
   payload: Promise<Object>;

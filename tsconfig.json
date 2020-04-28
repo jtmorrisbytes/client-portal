@@ -9,12 +9,13 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "module": "esnext",
+    "noImplicitAny": false,
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react"
   },
-  "include": ["./src"],
-  "exclude": ["**/node_modules/*", "./node_modules/@jtmorrisbytes/lib/src/*"]
+  "include": ["./src", "node_modules/@jtmorrisbytes/lib/User/index.d.ts"],
+  "exclude": ["**/node_modules/*"]
 }

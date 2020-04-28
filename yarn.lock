@@ -1446,12 +1446,10 @@
     "@types/yargs" "^15.0.0"
     chalk "^3.0.0"
 
-"@jtmorrisbytes/lib@^0.0.7":
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/@jtmorrisbytes/lib/-/lib-0.0.7.tgz#baf9fb6cfd21a475913b7979dfb7a4adb3d98821"
-  integrity sha512-0CWapX3MhCmNW8ThsOtVvUpIss+wCDLMDZOTs2IT8MMTOTHR5ZPEoKWZecTfWzKPJPxU9AQZyEbWSq/ovATYcQ==
-  dependencies:
-    typescript "^3.8.3"
+"@jtmorrisbytes/lib@^0.0.13":
+  version "0.0.13"
+  resolved "https://registry.yarnpkg.com/@jtmorrisbytes/lib/-/lib-0.0.13.tgz#69f3a7d590fb4177dbbaf2c39012afe856db7ce0"
+  integrity sha512-jK+/oGGTnZoKfOYDkWrlLSTbhbiIcw55o/reIh4f05XHBM3kfl6zmcksFzSkvhaRcWdyu8oMiHvwpHUMqkbCVQ==
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
@@ -1789,7 +1787,14 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react@*":
+"@types/react-dom@^16.9.7":
+  version "16.9.7"
+  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-16.9.7.tgz#60844d48ce252d7b2dccf0c7bb937130e27c0cd2"
+  integrity sha512-GHTYhM8/OwUCf254WO5xqR/aqD3gC9kSTLpopWGpQLpnw23jk44RvMHsyUSEplvRJZdHxhJGMMLF0kCPYHPhQA==
+  dependencies:
+    "@types/react" "*"
+
+"@types/react@*", "@types/react@^16.9.34":
   version "16.9.34"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-16.9.34.tgz#f7d5e331c468f53affed17a8a4d488cd44ea9349"
   integrity sha512-8AJlYMOfPe1KGLKyHpflCg5z46n0b5DbRfqDksxBLBTUpB75ypDBAO9eCUcjNwE6LCUslwTz00yyG/X9gaVtow==
