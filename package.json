@@ -3,13 +3,12 @@
   "version": "0.0.1",
   "description": "",
   "scripts": {
-    "test": "set NODE_ENV=development&& npx concurrently --kill-others \"npm run-script server:dev\" \"npm run-script start\" \"npm run-script cypress\"",
-    "server:dev": "cd server && npm run start:dev",
-    "server:start": "cd server && npm run start",
+    "test": "set NODE_ENV=development&& npx concurrently --kill-others \\\"npm run start\\\" \\\"npm run cypress\\\"",
     "client:build": "react-scripts build",
     "client:start": "react-scripts start",
     "cypress": "npx cypress open",
-    "start": "npx react-scripts start"
+    "start": "npx react-scripts start",
+    "flow": "flow"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -53,7 +52,10 @@
     "enzyme-adapter-react-16": "^1.15.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-redux": "^7.2.0",
     "react-scripts": "3.4.1",
+    "redux": "^4.0.5",
+    "redux-promise-middleware": "^6.1.2",
     "sha1": "^1.1.1"
   },
   "private": true,
@@ -62,9 +64,7 @@
     "concurrently": "^5.2.0",
     "cypress": "^4.4.1",
     "cypress-react-unit-test": "^3.3.1",
+    "flow": "^0.2.3",
     "jasmine-node": "^3.0.0"
-  },
-  "directories": {
-    "lib": "lib"
   }
 }

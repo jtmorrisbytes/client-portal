@@ -5,10 +5,10 @@
 // const expect = chai.expect;
 import React from "react";
 
-import app from "../../../src/App";
-
+import App from "../../../src/App";
+import "cypress-react-unit-test";
 describe("app component", () => {
   it("works", () => {
-    cy.mount;
+    cy.mount(<App />);
   });
 });
