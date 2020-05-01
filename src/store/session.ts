@@ -73,7 +73,17 @@ const START_AUTH_SESSION_PENDING = START_AUTH_SESSION + _PENDING;
 const ContentTypeJson = "application/json";
 const sessionApiUrl = "/api/auth/session";
 function startAuthSession() {
-  return (dispatch) => {};
+  console.log("startAuthSession requested");
+  return (dispatch) => {
+    dispatch({
+      type: START_AUTH_SESSION_PENDING,
+      payload: {},
+    });
+    Axios.post(sessionApiUrl).then((response) => {
+      if (response.data) {
+      }
+    });
+  };
 }
 function checkSessionStatusRejected(error) {
   return {
@@ -111,7 +121,7 @@ export function checkSessionStatus() {
             type: CHECK_SESSION_STATUS_FULFILLED,
             payload: response.data,
           });
-          if (response.data.user === null) {
+          if (response.data.user == null) {
             console.log(
               "user was not logged in...start auth session and initiate rotuer transition"
             );
