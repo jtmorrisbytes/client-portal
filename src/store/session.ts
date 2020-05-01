@@ -21,12 +21,15 @@ export type TAuth = {
   loading: boolean;
   state: string;
 };
+type TAuthResponse = {
+  state: string;
+};
 export type TCookie = {
   maxAge: number;
   expires: Date;
 };
 export type TSession = {
-  cookie: TCookie;
+  cookie: TCookie | null;
   user: null | TUser;
   ipAddr: string;
   loading: boolean;
@@ -44,10 +47,7 @@ type AsyncAction = {
 };
 
 const initialState: TSession = {
-  cookie: {
-    maxAge: 0,
-    expires: new Date(),
-  },
+  cookie: null,
   user: null,
   ipAddr: "",
   loading: true,
@@ -70,24 +70,54 @@ const CHECK_SESSION_STATUS_FULFILLED: string =
 const START_AUTH_SESSION = "START_AUTH_SESSION";
 const START_AUTH_SESSION_FULFILLED = START_AUTH_SESSION + _FULFILLED;
 const START_AUTH_SESSION_PENDING = START_AUTH_SESSION + _PENDING;
-
+const ContentTypeJson = "application/json";
 const sessionApiUrl = "/api/auth/session";
-export function checkSessionStatus(): AsyncAction {
-  return {
-    type: CHECK_SESSION_STATUS,
-    payload: Axios.get(sessionApiUrl).then((res) => {
-      if (res.status == 200) {
-      }
-      return res;
-    }),
+export function checkSessionStatus() {
+  // first get the status of the session
+  // if the user is null, start auth state
+  //when the auth state request resolves,
+  // perform router transition when successful
+  // stop if it fails
+  // else if the user is not null, then dispatch/resolve the user
+  return (dispatch) => {
+    console.log("checkSessionStatus dispatch", dispatch);
+    dispatch({ type: CHECK_SESSION_STATUS_PENDING, payload: {} });
+    Axios.get(sessionApiUrl)
+      .then((response) => {
+        if (!response.headers["Content-Type"].includes(ContentTypeJson)) {
+          // if the response body was provided
+          dispatch({
+            type: CHECK_SESSION_STATUS_FULFILLED,
+            payload: response.data,
+          });
+          if (response.data.user === null) {
+          }
+        } else {
+          dispatch({
+            type: CHECK_SESSION_STATUS_REJECTED,
+            payload: {
+              MESSAGE: `${sessionApiUrl} returned an incorrect content type`,
+              REASON: `expecting content type '${ContentTypeJson}'`,
+            },
+          });
+        }
+      })
+      .catch((error) => {
+        dispatch({
+          type: CHECK_SESSION_STATUS_REJECTED,
+          payload: error.request.response,
+        });
+      });
   };
 }
+export function updateSession(response) {}
 const sessionStartUrl = "/api/auth/";
 export function startAuthSession(): AsyncAction {
   return {
     type: START_AUTH_SESSION,
-    payload: Axios.post(sessionApiUrl).then((res: AxiosResponse) => {
+    payload: Axios.post(sessionStartUrl).then((res: AxiosResponse) => {
       if (res.data) {
+        // console.log("startauthsession action creator data", res.data);
         return res.data;
       } else
         return {
@@ -100,7 +130,8 @@ export function startAuthSession(): AsyncAction {
 export function sessionReducer(state = initialState, action: any): TSession {
   const type: string = action.type;
   // refine this type over time
-  let payload: AxiosError | AxiosResponse = action.payload;
+  let payload: any = action.payload;
+  // console.log("SessionReducer action, payload", type, payload);
   let response: any = {};
   let responseType: string = "";
   let responseMessage: string = "";
@@ -108,7 +139,7 @@ export function sessionReducer(state = initialState, action: any): TSession {
   let resonseCode: number = 0;
   switch (type) {
     case CHECK_SESSION_STATUS_PENDING:
-      console.log("check session pending");
+      // console.log("check session pending");
       return { ...state, loading: true };
     case CHECK_SESSION_STATUS_REJECTED:
       console.group("Check Session failed");
@@ -146,7 +177,7 @@ export function sessionReducer(state = initialState, action: any): TSession {
       payload = <AxiosResponse>payload;
       if (payload.data) {
         payload.data = <TSession>payload.data;
-        console.log("check session succeded, payload", payload.data);
+        // console.log("check session succeded, payload", payload.data);
         return {
           ...state,
           cookie: payload.data.cookie,
@@ -156,6 +187,8 @@ export function sessionReducer(state = initialState, action: any): TSession {
       } else {
         return {
           ...state,
+          loading: false,
+          user: null,
           error: {
             ...Response.EGeneralFailure,
             REASON: "Missing data in response Body",
@@ -164,10 +197,12 @@ export function sessionReducer(state = initialState, action: any): TSession {
         break;
       }
     case START_AUTH_SESSION_PENDING:
+      // console.log("START AUTH SESSION PENDING");
       return { ...state, auth: { loading: true, state: "" } };
     case START_AUTH_SESSION_FULFILLED:
-      return state;
-      break;
+      console.log("START AUTH SESSION FUFILLED", payload);
+      payload = <TAuthResponse>payload;
+      return { ...state, auth: { loading: false, state: payload.state } };
     default:
       return state;
   }

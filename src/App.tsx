@@ -1,8 +1,14 @@
 import React from "react";
 // import logo from './logo.svg';
+import Axios from "axios";
 import "./App.css";
 import { connect } from "react-redux";
-import { checkSessionStatus, startAuthSession, TCookie } from "./store/session";
+import {
+  checkSessionStatus,
+  startAuthSession,
+  TCookie,
+  // updateSession,
+} from "./store/session";
 import type { TSession, TUser, TAuth } from "./store/session";
 type State = {};
 type Props = {
@@ -12,22 +18,19 @@ type Props = {
   cookie: TCookie;
   user: TUser | null;
   auth: TAuth;
-  checkSessionStatus: typeof checkSessionStatus;
+  getSessionStatus: Function;
   startAuthSession: typeof startAuthSession;
+  // updateSession: typeof updateSession;
+  dispatch: Function;
 };
 
 class App extends React.Component<Props, State> {
   componentDidMount() {
-    this.props.checkSessionStatus();
+    this.props.getSessionStatus();
   }
-  componentDidUpdate() {
-    console.log("something changed");
-    if (!this.props.sessionLoading && this.props.user === null) {
-      console.log("session finished loading and user was not on session");
-    }
-  }
+  componentDidUpdate() {}
   render() {
-    console.log("this.props.session", this.props.cookie);
+    // console.log("this.props.session", this.props.auth);
     return <div>{String(this.props.sessionLoading)}</div>;
   }
 }
@@ -42,7 +45,14 @@ function mapStateToProps(state: any): Object {
     auth: session.auth,
   };
 }
-export default connect(mapStateToProps, {
-  checkSessionStatus,
-  startAuthSession,
-})(App);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getSessionStatus: () => {
+      dispatch(checkSessionStatus());
+    },
+    startAuthSession,
+    // updateSession,
+    dispatch,
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(App);
