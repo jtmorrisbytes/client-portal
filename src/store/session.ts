@@ -1,9 +1,15 @@
 import type { AxiosError, AxiosResponse } from "axios";
 // import type { IResponse } from "@jtmorrisbytes/lib/Response";
 import * as Response from "@jtmorrisbytes/lib/Response";
-// import * as ERROR from "@jtmorrisbytes/lib/Error";
-// import { ISession, MaxAge } from "@jtmorrisbytes/lib/TSession";
-// import * as User from "@jtmorrisbytes/lib/User";
+import { startAuthSession } from "./auth";
+
+import {
+  CHECK_SESSION_STATUS_FULFILLED,
+  CHECK_SESSION_STATUS_PENDING,
+  CHECK_SESSION_STATUS_REJECTED,
+  sessionApiUrl,
+} from "./constants";
+
 import * as Auth from "@jtmorrisbytes/lib/Auth";
 import Axios from "axios";
 
@@ -57,34 +63,7 @@ const initialState: TSession = {
   },
 };
 // create constants
-const _REJECTED: string = "_REJECTED";
-const _PENDING: string = "_PENDING";
-const _FULFILLED: string = "_FULFILLED";
 
-const CHECK_SESSION_STATUS: string = "CHECK_SESSION_STATUS";
-const CHECK_SESSION_STATUS_PENDING: string = CHECK_SESSION_STATUS + _PENDING;
-const CHECK_SESSION_STATUS_REJECTED: string = CHECK_SESSION_STATUS + _REJECTED;
-const CHECK_SESSION_STATUS_FULFILLED: string =
-  CHECK_SESSION_STATUS + _FULFILLED;
-
-const START_AUTH_SESSION = "START_AUTH_SESSION";
-const START_AUTH_SESSION_FULFILLED = START_AUTH_SESSION + _FULFILLED;
-const START_AUTH_SESSION_PENDING = START_AUTH_SESSION + _PENDING;
-const ContentTypeJson = "application/json";
-const sessionApiUrl = "/api/auth/session";
-function startAuthSession() {
-  console.log("startAuthSession requested");
-  return (dispatch) => {
-    dispatch({
-      type: START_AUTH_SESSION_PENDING,
-      payload: {},
-    });
-    Axios.post(sessionApiUrl).then((response) => {
-      if (response.data) {
-      }
-    });
-  };
-}
 function checkSessionStatusRejected(error) {
   return {
     type: CHECK_SESSION_STATUS_REJECTED,
@@ -100,13 +79,12 @@ export function checkSessionStatus() {
   // stop if it fails
   // else if the user is not null, then dispatch/resolve the user
   return (dispatch) => {
-    console.log("checkSessionStatus dispatch", dispatch);
+    // console.log("checkSessionStatus dispatch", dispatch);
     dispatch({ type: CHECK_SESSION_STATUS_PENDING, payload: {} });
     Axios.get(sessionApiUrl)
       .then((response) => {
         // if the response body was provided
-        console.log("checkSessionStatus response", response);
-        console.log("typeof response data", typeof response.data);
+        // console.log("checkSessionStatus response", response);
         if (!response.data) {
           dispatch(
             checkSessionStatusRejected({
@@ -116,17 +94,11 @@ export function checkSessionStatus() {
           );
           return;
         } else if (typeof response.data === "object") {
-          console.log("CHECK SESSION STATUS FULFILLED");
+          // console.log("CHECK SESSION STATUS FULFILLED");
           dispatch({
             type: CHECK_SESSION_STATUS_FULFILLED,
             payload: response.data,
           });
-          if (response.data.user == null) {
-            console.log(
-              "user was not logged in...start auth session and initiate rotuer transition"
-            );
-            dispatch(startAuthSession());
-          }
         } else {
           console.log(
             "checksessionstatus fallthrough response.data",
@@ -199,13 +171,6 @@ export function sessionReducer(state = initialState, action: any): TSession {
         };
         break;
       }
-    case START_AUTH_SESSION_PENDING:
-      // console.log("START AUTH SESSION PENDING");
-      return { ...state, auth: { loading: true, state: "" } };
-    case START_AUTH_SESSION_FULFILLED:
-      console.log("START AUTH SESSION FUFILLED", payload);
-      payload = <TAuthResponse>payload;
-      return { ...state, auth: { loading: false, state: payload.state } };
     default:
       return state;
   }
