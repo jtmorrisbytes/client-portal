@@ -3,11 +3,11 @@ import React from "react";
 import "./App.css";
 import { connect } from "react-redux";
 import { checkSessionStatus } from "./store/session";
-import type { Session, User } from "./store/session";
+import type { TSession, TUser } from "./store/session";
 type State = {};
 type Props = {
-  session: Session;
-  user: User | null;
+  session: TSession;
+  user: TUser | null;
   checkSessionStatus: typeof checkSessionStatus;
 };
 

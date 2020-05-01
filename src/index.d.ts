@@ -1,1 +1,1 @@
-import type User from "@jtmorrisbytes/lib/User";
+import type TUser from "@jtmorrisbytes/lib/User";

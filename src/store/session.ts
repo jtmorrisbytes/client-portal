@@ -2,7 +2,7 @@ import type { AxiosError, AxiosResponse } from "axios";
 // import type { IResponse } from "@jtmorrisbytes/lib/Response";
 import * as Response from "@jtmorrisbytes/lib/Response";
 // import * as ERROR from "@jtmorrisbytes/lib/Error";
-// import { ISession, MaxAge } from "@jtmorrisbytes/lib/Session";
+// import { ISession, MaxAge } from "@jtmorrisbytes/lib/TSession";
 // import * as User from "@jtmorrisbytes/lib/User";
 import * as Auth from "@jtmorrisbytes/lib/Auth";
 import Axios from "axios";
@@ -11,19 +11,23 @@ type Action = {
   type: string;
   payload: any;
 };
-export type User = {
+export type TUser = {
   userId: number;
   email?: string;
   firstName?: string;
   lastName?: string;
 };
+export type TAuth = {
+  loading: boolean;
+  state: string;
+};
 
-export type Session = {
+export type TSession = {
   cookie: {
     maxAge: Number;
     expires: Date;
   };
-  user: null | User;
+  user: null | TUser;
   ipAddr: string;
   loading: boolean;
   error?: {
@@ -31,6 +35,7 @@ export type Session = {
     TYPE: string;
     REASON: string;
   };
+  auth: TAuth;
 };
 
 type AsyncAction = {
@@ -38,7 +43,7 @@ type AsyncAction = {
   payload: Promise<Object>;
 };
 
-const initialState: Session = {
+const initialState: TSession = {
   cookie: {
     maxAge: 0,
     expires: new Date(),
@@ -46,6 +51,10 @@ const initialState: Session = {
   user: null,
   ipAddr: "",
   loading: true,
+  auth: {
+    state: "",
+    loading: false,
+  },
 };
 // create constants
 const _REJECTED: string = "_REJECTED";
@@ -58,6 +67,10 @@ const CHECK_SESSION_STATUS_REJECTED: string = CHECK_SESSION_STATUS + _REJECTED;
 const CHECK_SESSION_STATUS_FULFILLED: string =
   CHECK_SESSION_STATUS + _FULFILLED;
 
+const START_AUTH_SESSION = "START_AUTH_SESSION";
+const START_AUTH_SESSION_FULFILLED = START_AUTH_SESSION + _FULFILLED;
+const START_AUTH_SESSION_PENDING = START_AUTH_SESSION + _PENDING;
+
 const sessionApiUrl = "/api/auth/session";
 export function checkSessionStatus(): AsyncAction {
   return {
@@ -69,8 +82,22 @@ export function checkSessionStatus(): AsyncAction {
     }),
   };
 }
-
-export function sessionReducer(state = initialState, action: any): Session {
+const sessionStartUrl = "/api/auth/";
+export function startAuthSession(): AsyncAction {
+  return {
+    type: START_AUTH_SESSION,
+    payload: Axios.post(sessionApiUrl).then((res: AxiosResponse) => {
+      if (res.data) {
+        return res.data;
+      } else
+        return {
+          ...Response.EMissing,
+          REASON: "Body was missing from the request ",
+        };
+    }),
+  };
+}
+export function sessionReducer(state = initialState, action: any): TSession {
   const type: string = action.type;
   // refine this type over time
   let payload: AxiosError | AxiosResponse = action.payload;
@@ -118,7 +145,7 @@ export function sessionReducer(state = initialState, action: any): Session {
     case CHECK_SESSION_STATUS_FULFILLED:
       payload = <AxiosResponse>payload;
       if (payload.data) {
-        payload.data = <Session>payload.data;
+        payload.data = <TSession>payload.data;
         console.log("check session succeded, payload", payload.data);
         return {
           ...state,
@@ -136,6 +163,11 @@ export function sessionReducer(state = initialState, action: any): Session {
         };
         break;
       }
+    case START_AUTH_SESSION_PENDING:
+      return { ...state, auth: { loading: true, state: "" } };
+    case START_AUTH_SESSION_FULFILLED:
+      return state;
+      break;
     default:
       return state;
   }
