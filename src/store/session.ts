@@ -72,6 +72,16 @@ const START_AUTH_SESSION_FULFILLED = START_AUTH_SESSION + _FULFILLED;
 const START_AUTH_SESSION_PENDING = START_AUTH_SESSION + _PENDING;
 const ContentTypeJson = "application/json";
 const sessionApiUrl = "/api/auth/session";
+function startAuthSession() {
+  return (dispatch) => {};
+}
+function checkSessionStatusRejected(error) {
+  return {
+    type: CHECK_SESSION_STATUS_REJECTED,
+    payload: { error },
+  };
+}
+
 export function checkSessionStatus() {
   // first get the status of the session
   // if the user is null, start auth state
@@ -84,49 +94,53 @@ export function checkSessionStatus() {
     dispatch({ type: CHECK_SESSION_STATUS_PENDING, payload: {} });
     Axios.get(sessionApiUrl)
       .then((response) => {
-        if (!response.headers["Content-Type"].includes(ContentTypeJson)) {
+        if (!response.headers["content-type"].includes(ContentTypeJson)) {
           // if the response body was provided
-          dispatch({
-            type: CHECK_SESSION_STATUS_FULFILLED,
-            payload: response.data,
-          });
-          if (response.data.user === null) {
+          if (typeof response.data === "object") {
+            dispatch({
+              type: CHECK_SESSION_STATUS_FULFILLED,
+              payload: response.data,
+            });
+            if (response.data.user === null) {
+              console.log(
+                "user was not logged in...start auth session and initiate rotuer transition"
+              );
+              dispatch(startAuthSession());
+            }
+          } else {
+            dispatch(checkSessionStatusRejected(Response.EMissing));
+          }
+        } else {
+          dispatch(
+            checkSessionStatusRejected({
+              MESSAGE: `${sessionApiUrl} returned an incorrect content type`,
+              REASON: `expecting content type '${ContentTypeJson}'`,
+            })
+          );
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        if ((error.request || {}).response.type) {
+          switch (error.request.response.type) {
+            case Response.ENotAuthorized.TYPE:
+              dispatch({
+                type: CHECK_SESSION_STATUS_REJECTED,
+                payload: {},
+              });
           }
         } else {
           dispatch({
             type: CHECK_SESSION_STATUS_REJECTED,
-            payload: {
-              MESSAGE: `${sessionApiUrl} returned an incorrect content type`,
-              REASON: `expecting content type '${ContentTypeJson}'`,
-            },
+            payload: { error: Response.EGeneralFailure },
           });
         }
-      })
-      .catch((error) => {
-        dispatch({
-          type: CHECK_SESSION_STATUS_REJECTED,
-          payload: error.request.response,
-        });
       });
   };
 }
 export function updateSession(response) {}
 const sessionStartUrl = "/api/auth/";
-export function startAuthSession(): AsyncAction {
-  return {
-    type: START_AUTH_SESSION,
-    payload: Axios.post(sessionStartUrl).then((res: AxiosResponse) => {
-      if (res.data) {
-        // console.log("startauthsession action creator data", res.data);
-        return res.data;
-      } else
-        return {
-          ...Response.EMissing,
-          REASON: "Body was missing from the request ",
-        };
-    }),
-  };
-}
+
 export function sessionReducer(state = initialState, action: any): TSession {
   const type: string = action.type;
   // refine this type over time

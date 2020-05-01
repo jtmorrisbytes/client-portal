@@ -5,7 +5,7 @@ import "./App.css";
 import { connect } from "react-redux";
 import {
   checkSessionStatus,
-  startAuthSession,
+  // startAuthSession,
   TCookie,
   // updateSession,
 } from "./store/session";
@@ -19,7 +19,7 @@ type Props = {
   user: TUser | null;
   auth: TAuth;
   getSessionStatus: Function;
-  startAuthSession: typeof startAuthSession;
+  // startAuthSession: typeof startAuthSession;
   // updateSession: typeof updateSession;
   dispatch: Function;
 };
@@ -50,7 +50,7 @@ const mapDispatchToProps = (dispatch) => {
     getSessionStatus: () => {
       dispatch(checkSessionStatus());
     },
-    startAuthSession,
+    // startAuthSession,
     // updateSession,
     dispatch,
   };
