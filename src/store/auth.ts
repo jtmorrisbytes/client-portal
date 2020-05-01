@@ -3,10 +3,14 @@ import {
   START_AUTH_SESSION_PENDING,
   START_AUTH_SESSION_FULFILLED,
   START_AUTH_SESSION_REJECTED,
+  START_LOGIN_FLOW_FULFILLED,
+  START_LOGIN_FLOW_PENDING,
+  START_LOGIN_FLOW_REJECTED,
   authApiUrl,
 } from "./constants";
 import Resopnse from "@jtmorrisbytes/lib/Response";
 import Axios from "axios";
+import {} from "@jtmorrisbytes/lib/Auth";
 
 function rejectAuthSessionAction(error) {
   return {
@@ -30,13 +34,34 @@ export function startAuthSession() {
     });
     Axios.post(authApiUrl).then((response) => {
       if (typeof response.data === "object") {
-        resolveAuthSessionAction(response.data);
+        dispatch(resolveAuthSessionAction(response.data));
       } else {
-        rejectAuthSessionAction(Resopnse.EMissing);
+        dispatch(rejectAuthSessionAction(Resopnse.EMissing));
       }
     });
   };
 }
+function resolveStartLoginFlowAction(data) {}
+function rejectStartLoginFlowAction(error) {
+  return {
+    type: START_LOGIN_FLOW_REJECTED,
+    payload: { error },
+  };
+}
+export function startLoginFlow(state: string) {
+  if (typeof state !== "string") {
+    state = "";
+  }
+  if (state.length > 0) {
+  } else {
+    return rejectStartLoginFlowAction({
+      MESSAGE: "Start Login Flow got an invalid login state",
+      REASON: "Start Login flow requires a string of length > 0",
+      TYPE: "AUTH_STATE_INVALID",
+    });
+  }
+}
+
 const initialState = {
   state: "",
   timestamp: -1,

@@ -22,7 +22,7 @@ type Props = {
   auth: TAuth;
   sessionError: object;
   getSessionStatus: Function;
-  startLoginFlow: Function;
+  startAuthSession: Function;
   dispatch: Function;
 };
 
@@ -40,7 +40,7 @@ class App extends React.Component<Props, State> {
           this.props.auth.loading === false
         ) {
           console.log("starting auth session");
-          this.props.startLoginFlow();
+          this.props.startAuthSession();
         } else if (
           this.props.auth.state.length > 0 &&
           this.props.auth.loading === false
@@ -83,7 +83,7 @@ const mapDispatchToProps = (dispatch) => {
     getSessionStatus: () => {
       dispatch(checkSessionStatus());
     },
-    startLoginFlow: () => {
+    startAuthSession: () => {
       dispatch(startAuthSession());
     },
     // startAuthSession,
