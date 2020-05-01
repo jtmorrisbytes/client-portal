@@ -18,6 +18,7 @@ type Props = {
   cookie: TCookie;
   user: TUser | null;
   auth: TAuth;
+  sessionError: object;
   getSessionStatus: Function;
   // startAuthSession: typeof startAuthSession;
   // updateSession: typeof updateSession;
@@ -28,7 +29,11 @@ class App extends React.Component<Props, State> {
   componentDidMount() {
     this.props.getSessionStatus();
   }
-  componentDidUpdate() {}
+  componentDidUpdate() {
+    if (this.props.sessionError) {
+      console.log("an error occurred in the session", this.props.sessionError);
+    }
+  }
   render() {
     // console.log("this.props.session", this.props.auth);
     return <div>{String(this.props.sessionLoading)}</div>;
@@ -43,6 +48,7 @@ function mapStateToProps(state: any): Object {
     cookie: session.cookie,
     user: session.user,
     auth: session.auth,
+    sessionError: session.error,
   };
 }
 const mapDispatchToProps = (dispatch) => {
