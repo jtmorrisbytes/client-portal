@@ -21,12 +21,12 @@ export type TAuth = {
   loading: boolean;
   state: string;
 };
-
+export type TCookie = {
+  maxAge: number;
+  expires: Date;
+};
 export type TSession = {
-  cookie: {
-    maxAge: Number;
-    expires: Date;
-  };
+  cookie: TCookie;
   user: null | TUser;
   ipAddr: string;
   loading: boolean;
