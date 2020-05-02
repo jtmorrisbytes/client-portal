@@ -61,6 +61,12 @@ export function startLoginFlow(state: string) {
     });
   }
 }
+export type TAuth = {
+  state: string;
+  timestamp: number;
+  ipAddr: string;
+  loading: boolean;
+};
 
 const initialState = {
   state: "",

@@ -3,6 +3,9 @@ import { connect } from "react-redux";
 import type { TSession } from "../../store/session";
 import type { TRouter } from "../../store/routes";
 import { loginApiUrl } from "../../store/constants";
+import type { TAuth } from "../../store/auth";
+import type { RouteComponentProps } from "react-router-dom";
+
 import Axios from "axios";
 import {
   Container,
@@ -12,9 +15,10 @@ import {
   Form,
   Button,
 } from "react-bootstrap";
-interface Props {
+interface Props extends RouteComponentProps {
   session: TSession;
   router: TRouter;
+  auth: TAuth;
 }
 interface State {
   email: string;
@@ -31,8 +35,24 @@ class Login extends React.Component<Props, State> {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleInputUpdate = this.handleInputUpdate.bind(this);
   }
+
+  getAuthState() {
+    return (
+      new URLSearchParams((this.props.location || {}).search || "").get(
+        "state"
+      ) ||
+      (this.props.auth || {}).state ||
+      ""
+    );
+  }
   componentDidMount() {
     console.log("the login component mounted");
+    if (this.getAuthState().length === 0) {
+      console.log(
+        "auth state was empty on both redux and query," +
+          "this component will not work properly"
+      );
+    }
   }
   handleInputUpdate(e) {
     const { name, value } = e.target;
@@ -41,8 +61,18 @@ class Login extends React.Component<Props, State> {
   }
   handleSubmit(e) {
     e.preventDefault();
+    // get the state string
     console.log("the form has been submitted");
-    console.log(e.target.email);
+    let state = this.getAuthState();
+    if (state.length === 0) {
+      console.log("state was empty on form submit, login will fail currently");
+    }
+    // console.log("getting state from query", params.get("state"));
+    Axios.post(loginApiUrl, { state })
+      .then(console.log)
+      .catch((error) => {
+        console.log("login rejected");
+      });
   }
   render() {
     return (
@@ -84,8 +114,8 @@ class Login extends React.Component<Props, State> {
   }
 }
 
-function mapStateToProps(state: any): Props {
-  return { session: state.session, router: state.router };
+function mapStateToProps(state: any): any {
+  return { session: state.session, router: state.router, auth: state.auth };
 }
 const mapDispachToProps = {};
 export default connect(mapStateToProps, mapDispachToProps)(Login);
