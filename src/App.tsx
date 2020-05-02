@@ -14,7 +14,7 @@ import {
   requestRedirect,
   notifyRedirectInterstitial,
   LOGIN_URL,
-  RouteState,
+  TRouter,
   endRouteTransition,
 } from "./store/routes";
 import { REDIRECT_LOGIN } from "./store/constants";
@@ -29,7 +29,7 @@ interface Props extends RouteComponentProps<any> {
   cookie: TCookie;
   user: TUser | null;
   auth: TAuth;
-  router: RouteState;
+  router: TRouter;
   sessionError: object;
   getSessionStatus: Function;
   startAuthSession: Function;
@@ -110,7 +110,7 @@ class App extends React.Component<Props, State> {
   render() {
     // console.log("this.props.session", this.props.auth);
     return (
-      <div>
+      <div className="App">
         <Routes />
       </div>
     );

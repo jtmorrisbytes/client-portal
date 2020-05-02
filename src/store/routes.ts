@@ -1,6 +1,8 @@
 import { REDIRECT_LOGIN, REDIRECT_REGISTER } from "./constants";
 
 export const LOGIN_URL = "/login";
+export const REGISTER_URL = "/register";
+export const PASSWORD_RESET = "/reset";
 export type LOGIN_QUERY_PARAMS = {
   state: string;
 };
@@ -39,13 +41,13 @@ export function endRouteTransition(type = "") {
     payload: {},
   };
 }
-export type RouteState = {
+export type TRouter = {
   redirectRequested: boolean;
   redirectInProgress: boolean;
   redirectTo: string | null;
   redirectType: string | null;
 };
-const initialState: RouteState = {
+const initialState: TRouter = {
   // when redirect requested is true,
   // begin whatever animation or
   // loading process needs to happen
