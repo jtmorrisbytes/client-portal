@@ -16,14 +16,15 @@ const webpackPreprocessor = require("@cypress/webpack-preprocessor");
  * @type {Cypress.PluginConfig}
  */
 module.exports = (on, config) => {
-  on(
-    "file:preprocessor",
-    webpackPreprocessor({
-      webpackOptions: require("../../node_modules/react-scripts/config/webpack.config")(
-        "development"
-      ),
-    })
-  );
+  // on(
+  //   "file:preprocessor",
+  //   webpackPreprocessor({
+  //     webpackOptions: require("../../node_modules/react-scripts/config/webpack.config")(
+  //       "development"
+  //     ),
+  //   })
+  // );
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
+  return config;
 };

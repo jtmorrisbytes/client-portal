@@ -5,6 +5,7 @@ import type { TRouter } from "../../store/routes";
 import { loginApiUrl } from "../../store/constants";
 import type { TAuth } from "../../store/auth";
 import type { RouteComponentProps } from "react-router-dom";
+import UserErrors from "@jtmorrisbytes/lib/User/Errors";
 
 import Axios from "axios";
 import {
@@ -22,7 +23,9 @@ interface Props extends RouteComponentProps {
 }
 interface State {
   email: string;
+  emailError: string;
   password: string;
+  passwordError: string;
 }
 
 class Login extends React.Component<Props, State> {
@@ -30,7 +33,9 @@ class Login extends React.Component<Props, State> {
     super(props);
     this.state = {
       email: "",
+      emailError: "",
       password: "",
+      passwordError: "",
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleInputUpdate = this.handleInputUpdate.bind(this);
@@ -63,15 +68,35 @@ class Login extends React.Component<Props, State> {
     e.preventDefault();
     // get the state string
     console.log("the form has been submitted");
-    let state = this.getAuthState();
+    let state = decodeURIComponent(this.getAuthState());
     if (state.length === 0) {
       console.log("state was empty on form submit, login will fail currently");
     }
     // console.log("getting state from query", params.get("state"));
-    Axios.post(loginApiUrl, { state })
+    console.log("trying to log in with state variable", state);
+    Axios.post(loginApiUrl, {
+      state,
+      user: { email: this.state.email, password: this.state.password },
+    })
       .then(console.log)
       .catch((error) => {
-        console.log("login rejected");
+        try {
+          let resObj = JSON.parse(error.request.response);
+          console.log("response object could be parsed", resObj);
+          switch (resObj.TYPE) {
+            case UserErrors.ENotFoundByEmail.TYPE:
+              this.setState({
+                ...this.state,
+                email: "",
+                password: "",
+                emailError: resObj.MESSAGE,
+              });
+              break;
+            default:
+              this.setState({ ...this.state, email: "", password: "" });
+              break;
+          }
+        } catch (e) {}
       });
   }
   render() {

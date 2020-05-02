@@ -9,9 +9,11 @@ export type LOGIN_QUERY_PARAMS = {
 function convertToQueryString(params: object) {
   return (
     "?" +
-    Object.keys(params)
-      .map((key) => key + "=" + params[key])
-      .join("&")
+    encodeURIComponent(
+      Object.keys(params)
+        .map((key) => key + "=" + params[key])
+        .join("&")
+    )
   );
 }
 const BEGIN_ROUTE_TRANSITION = "BEGIN_ROUTE_TRANSITION";
