@@ -1,7 +1,7 @@
 import type { AxiosError, AxiosResponse } from "axios";
 // import type { IResponse } from "@jtmorrisbytes/lib/Response";
 import * as Response from "@jtmorrisbytes/lib/Response";
-import { startAuthSession } from "./auth";
+// import { startAuthSession } from "./auth";
 
 import {
   CHECK_SESSION_STATUS_FULFILLED,
@@ -10,13 +10,13 @@ import {
   sessionApiUrl,
 } from "./constants";
 
-import * as Auth from "@jtmorrisbytes/lib/Auth";
+// import * as Auth from "@jtmorrisbytes/lib/Auth";
 import Axios from "axios";
 
-type Action = {
-  type: string;
-  payload: any;
-};
+// type Action = {
+//   type: string;
+//   payload: any;
+// };
 export type TUser = {
   userId: number;
   email?: string;
@@ -47,10 +47,10 @@ export type TSession = {
   auth: TAuth;
 };
 
-type AsyncAction = {
-  type: String;
-  payload: Promise<Object>;
-};
+// type AsyncAction = {
+//   type: String;
+//   payload: Promise<Object>;
+// };
 
 const initialState: TSession = {
   cookie: null,
@@ -128,19 +128,13 @@ export function checkSessionStatus() {
       });
   };
 }
-export function updateSession(response) {}
-const sessionStartUrl = "/api/auth/";
+// export function updateSession(response) {}
 
 export function sessionReducer(state = initialState, action: any): TSession {
   const type: string = action.type;
   // refine this type over time
   let payload: any = action.payload;
   // console.log("SessionReducer action, payload", type, payload);
-  let response: any = {};
-  let responseType: string = "";
-  let responseMessage: string = "";
-  let responseReason: string = "";
-  let resonseCode: number = 0;
   switch (type) {
     case CHECK_SESSION_STATUS_PENDING:
       // console.log("check session pending");
@@ -148,7 +142,7 @@ export function sessionReducer(state = initialState, action: any): TSession {
     case CHECK_SESSION_STATUS_REJECTED:
       return { ...state, loading: false, error: payload.error || null };
     case CHECK_SESSION_STATUS_FULFILLED:
-      payload = <AxiosResponse>payload;
+      payload = payload as AxiosResponse;
       if (payload) {
         // console.log("check session succeded, payload", payload.data);
         return {

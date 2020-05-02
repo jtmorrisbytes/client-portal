@@ -5,24 +5,29 @@ export type LOGIN_QUERY_PARAMS = {
   state: string;
 };
 function convertToQueryString(params: object) {
-  return Object.keys(params)
-    .map((key) => key + "=" + params[key])
-    .join("&");
+  return (
+    "?" +
+    Object.keys(params)
+      .map((key) => key + "=" + params[key])
+      .join("&")
+  );
 }
 const BEGIN_ROUTE_TRANSITION = "BEGIN_ROUTE_TRANSITION";
 const REDIRECT = "REDIRECT";
 const END_ROUTE_TRANSITION = "END_ROUTE_TRANSITION";
 export function requestRedirect(
-  redirectType = "",
+  redirectType: string = "",
   path: string,
   params: object
 ) {
+  console.log("request redirect function got callede");
   return {
     type: BEGIN_ROUTE_TRANSITION,
     payload: { redirectType, url: path + convertToQueryString(params) },
   };
 }
 export function notifyRedirectInterstitial() {
+  console.log("notifyRedirectInterstitial called");
   return {
     type: REDIRECT,
     payload: {},
@@ -34,7 +39,7 @@ export function endRouteTransition(type = "") {
     payload: {},
   };
 }
-type RouteState = {
+export type RouteState = {
   redirectRequested: boolean;
   redirectInProgress: boolean;
   redirectTo: string | null;
@@ -77,17 +82,20 @@ export function routeReducer(
   action: { type: string; payload: any }
 ) {
   const { type, payload } = action;
+  console.log("route reducer", type, payload);
   switch (type) {
     case BEGIN_ROUTE_TRANSITION:
+      console.log("redirect requested, beginning route transition");
       // a redirect has been requested
       // set redirectRequested to true along with the path
       return {
         ...state,
         redirectRequested: true,
         redirectType: payload.redirectType,
-        redirectTo: payload.redirectTo,
+        redirectTo: payload.url,
       };
     case REDIRECT:
+      console.log("a redirect occurred");
       return { ...state, redirectRequested: false, redirectInProgress: true };
     case END_ROUTE_TRANSITION:
       return { ...initialState };
