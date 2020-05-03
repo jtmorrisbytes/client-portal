@@ -54,8 +54,7 @@ class Register extends React.Component<Props, State> {
     e.preventDefault();
   }
   handleEmailInput(e) {
-    let newEmail = Email(e.target.value);
-    this.setState({ ...this.state, email: newEmail });
+    this.setState({ ...this.state, email: Email(e.target.value) });
   }
   render() {
     return (

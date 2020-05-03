@@ -1,3 +1,5 @@
+const EmailErrors = require("@jtmorrisbytes/lib/Email/Errors");
+
 describe("The Register component", () => {
   beforeEach(() => {
     cy.visit("/");
@@ -76,6 +78,16 @@ describe("The Register component", () => {
     cy.fixture("nonExistantUser").then((user) => {
       console.log("chai user", user);
       cy.get("@email").type(user.badEmailNoAt);
+      cy.get("#email-invalid.text-danger").should(
+        "have.text",
+        EmailErrors.EInvalid.MESSAGE
+      );
+      cy.get("@email").clear();
+      cy.get("#email-invalid.text-danger").should("exist");
+      cy.get("@email").type(user.badEmailNoDomain);
+      cy.get("#email-invalid.text-danger").should("exist");
+      cy.get("@email").clear().type(user.email);
+      cy.get("#email-invalid.text-danger").should("not.exist");
     });
   });
 });
