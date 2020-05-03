@@ -19,6 +19,10 @@ describe("The Register component", () => {
     cy.get("@register")
       .get("input[id='confirmPassword'][type='password']")
       .as("confirmPassword");
+
+    //phone number
+    cy.get("@register").get("input[id='phone'][type='tel']").as("phone");
+
     // street address input
     cy.get("@register")
       .get("input[id='streetAddress'][name='address']")
@@ -47,6 +51,9 @@ describe("The Register component", () => {
       .should("have.text", "Confirm Password");
     //street address Label
     cy.get("@register")
+      .get("label[for='phone']")
+      .should("have.text", "Phone Number");
+    cy.get("@register")
       .get("label[for='streetAddress']")
       .should("have.text", "Street Address");
     // city label
@@ -66,6 +73,7 @@ describe("The Register component", () => {
       cy.get("@confirmPassword")
         .type(user.password)
         .should("have.value", user.password);
+      cy.get("@phone").type(user.phone).should("have.value", user.phone);
       cy.get("@address")
         .type(user.streetAddress)
         .should("have.value", user.streetAddress);
@@ -92,7 +100,6 @@ describe("The Register component", () => {
   });
   it("should validate passwords on the client", () => {
     cy.fixture("nonExistantUser").then((user) => {
-      console.log("chai user", user);
       cy.get("@password").type(user.badPassword);
       cy.get("#password-invalid.text-danger").should("exist");
       cy.get("@password").clear();
@@ -101,6 +108,16 @@ describe("The Register component", () => {
       cy.get("#password-invalid.text-danger").should("exist");
       cy.get("@password").clear().type(user.password);
       cy.get("#password-invalid.text-danger").should("not.exist");
+    });
+  });
+  it("should require the user to confirm their password", () => {
+    cy.fixture("nonExistantUser").then((user) => {
+      cy.get("@password").type(user.password);
+      cy.get("#password-no-match.form-text.text-danger")
+        .should("exist")
+        .should("have.text", "Passwords do not match");
+      cy.get("@confirmPassword").type(user.password);
+      cy.get("#password-no-match.form-text.text-danger").should("not.exist");
     });
   });
 });

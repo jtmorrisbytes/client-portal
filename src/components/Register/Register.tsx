@@ -20,6 +20,7 @@ interface State {
     value: string;
   };
   emailError: string;
+  phone: string;
   password: {
     isValid: boolean;
     value: string;
@@ -39,6 +40,7 @@ class Register extends React.Component<Props, State> {
       firstName: new Name(""),
       lastName: new Name(""),
       email: Email(""),
+      phone: "",
       emailError: "",
       password: Password(""),
       passwordConfirmation: "",
@@ -52,6 +54,9 @@ class Register extends React.Component<Props, State> {
     this.getAuthState = getAuthState.bind(this);
     this.handleEmailInput = this.handleEmailInput.bind(this);
     this.handlePasswordInput = this.handlePasswordInput.bind(this);
+    this.handlePasswordConfirmationInput = this.handlePasswordConfirmationInput.bind(
+      this
+    );
   }
   getAuthState() {}
   handleSubmit(e) {
@@ -66,7 +71,21 @@ class Register extends React.Component<Props, State> {
   handlePasswordConfirmationInput(e) {
     this.setState({ ...this.state, passwordConfirmation: e.target.value });
   }
+  handlePhoneInput(e) {
+    console.log("phone number", e);
+    this.setState({
+      ...this.state,
+      phone: e.target.value <= 10 ? e.target.value : this.state.phone,
+    });
+  }
   render() {
+    console.log(
+      "password",
+      this.state.password.value,
+      "passwordconfirm",
+
+      this.state.passwordConfirmation
+    );
     return (
       <Container>
         <Row>
@@ -103,9 +122,34 @@ class Register extends React.Component<Props, State> {
               ) : null}
               <Form.Group controlId="confirmPassword">
                 <Form.Label>Confirm Password</Form.Label>
-                <Form.Control type="password" required />
-                {/* <Form */}
+                <Form.Control
+                  value={this.state.passwordConfirmation}
+                  onChange={this.handlePasswordConfirmationInput}
+                  type="password"
+                  required
+                />
+                {this.state.passwordConfirmation ===
+                this.state.password.value ? null : (
+                  <Form.Text id={"password-no-match"} className="text-danger">
+                    Passwords do not match
+                  </Form.Text>
+                )}
               </Form.Group>
+              <Form.Group controlId="phone">
+                <Form.Label>Phone Number</Form.Label>
+                <Form.Control
+                  name="phone"
+                  type="tel"
+                  minLength={10}
+                  maxLength={10}
+                  placeholder="1234567890"
+                />
+              </Form.Group>
+              {this.state.phone.length < 10 ? (
+                <Form.Text id={"phone-too-short"} className="text-danger">
+                  Phone Number is too short
+                </Form.Text>
+              ) : null}
               <Form.Group controlId="streetAddress">
                 <Form.Label>Street Address</Form.Label>
                 <Form.Control name="address" placeholder="123 Software Way" />
