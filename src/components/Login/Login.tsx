@@ -1,11 +1,12 @@
 import React, { KeyboardEvent, SyntheticEvent } from "react";
 import { connect } from "react-redux";
 import type { TSession } from "../../store/session";
-import type { TRouter } from "../../store/routes";
+import { TRouter, REGISTER_URL } from "../../store/routes";
 import { loginApiUrl } from "../../store/constants";
 import type { TAuth } from "../../store/auth";
 import type { RouteComponentProps } from "react-router-dom";
-import UserErrors from "@jtmorrisbytes/lib/User/Errors";
+import { LinkContainer } from "react-router-bootstrap";
+import * as UserErrors from "@jtmorrisbytes/lib/User/Errors";
 
 import Axios from "axios";
 import {
@@ -15,6 +16,7 @@ import {
   Col,
   Form,
   Button,
+  Alert,
 } from "react-bootstrap";
 interface Props extends RouteComponentProps {
   session: TSession;
@@ -23,9 +25,8 @@ interface Props extends RouteComponentProps {
 }
 interface State {
   email: string;
-  emailError: string;
+  error: string;
   password: string;
-  passwordError: string;
 }
 
 class Login extends React.Component<Props, State> {
@@ -33,12 +34,12 @@ class Login extends React.Component<Props, State> {
     super(props);
     this.state = {
       email: "",
-      emailError: "",
+      error: "",
       password: "",
-      passwordError: "",
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleInputUpdate = this.handleInputUpdate.bind(this);
+    this.clearErrors = this.clearErrors.bind(this);
   }
 
   getAuthState() {
@@ -76,32 +77,47 @@ class Login extends React.Component<Props, State> {
     console.log("trying to log in with state variable", state);
     Axios.post(loginApiUrl, {
       state,
-      user: { email: this.state.email, password: this.state.password },
+      email: this.state.email,
+      password: this.state.password,
     })
       .then(console.log)
       .catch((error) => {
         try {
           let resObj = JSON.parse(error.request.response);
           console.log("response object could be parsed", resObj);
+          console.log("response type", resObj.TYPE);
           switch (resObj.TYPE) {
             case UserErrors.ENotFoundByEmail.TYPE:
               this.setState({
                 ...this.state,
                 email: "",
                 password: "",
-                emailError: resObj.MESSAGE,
+                error: resObj.REASON,
               });
               break;
             default:
+              console.log("Login error not handled");
               this.setState({ ...this.state, email: "", password: "" });
               break;
           }
-        } catch (e) {}
+        } catch (e) {
+          console.error("handlesubmit error", e);
+        }
       });
+  }
+  clearErrors() {
+    this.setState({ ...this.state, error: "" });
   }
   render() {
     return (
       <Container>
+        <Alert
+          variant="danger"
+          show={this.state.error.length > 0}
+          dismissible
+          onClose={this.clearErrors}>
+          {this.state.error}
+        </Alert>
         <Row>
           <Col sm={true}>
             <h5>Log in to client portal</h5>
@@ -128,9 +144,14 @@ class Login extends React.Component<Props, State> {
                   required
                 />
               </Form.Group>
-              <Button block type="submit">
-                Log in
+              <Button block type="submit" name="login">
+                Log In
               </Button>
+              <LinkContainer to={REGISTER_URL}>
+                <Button block name="register" variant="secondary">
+                  Sign Up
+                </Button>
+              </LinkContainer>
             </Form>
           </Col>
         </Row>
