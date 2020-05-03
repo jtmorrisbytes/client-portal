@@ -9,6 +9,19 @@ describe("The Register component", () => {
     cy.location("hash").should("include", "?state=");
   });
   it("should have a registration form", () => {
-    cy.get("form");
+    cy.get("form[name='register']").as("register");
+    cy.get("@register")
+      .get("label[for='email']")
+      .should("have.text", "Email Address");
+    //email
+    cy.get("@register").get("input[name='email'][type='email']").as("email");
+    // password
+    cy.get("label[for='password']").should("have.text", "Password");
+    cy.get("input[name='password'][type='password']").as("password");
+    // password conformation
+    cy.get("label[for='confirmPassword']").should(
+      "have.text",
+      "Confirm Password"
+    );
   });
 });

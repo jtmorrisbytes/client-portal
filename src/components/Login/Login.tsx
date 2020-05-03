@@ -7,7 +7,7 @@ import type { TAuth } from "../../store/auth";
 import type { RouteComponentProps } from "react-router-dom";
 import { LinkContainer } from "react-router-bootstrap";
 import * as UserErrors from "@jtmorrisbytes/lib/User/Errors";
-
+import { requestRedirect } from "../../store/routes";
 import Axios from "axios";
 import {
   Container,
@@ -164,5 +164,5 @@ class Login extends React.Component<Props, State> {
 function mapStateToProps(state: any): any {
   return { session: state.session, router: state.router, auth: state.auth };
 }
-const mapDispachToProps = {};
+const mapDispachToProps = { requestRedirect };
 export default connect(mapStateToProps, mapDispachToProps)(Login);
