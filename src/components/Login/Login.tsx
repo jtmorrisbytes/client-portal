@@ -147,7 +147,8 @@ class Login extends React.Component<Props, State> {
               <Button block type="submit" name="login">
                 Log In
               </Button>
-              <LinkContainer to={REGISTER_URL}>
+              <LinkContainer
+                to={REGISTER_URL + `?state=${this.getAuthState()}`}>
                 <Button block name="register" variant="secondary">
                   Sign Up
                 </Button>
