@@ -14,7 +14,16 @@
 // ***********************************************************
 
 // Import commands.js using ES2015 syntax:
-import './commands'
-
+import "./commands";
+import "cypress-hmr-restarter";
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+// Cypress.on("window:before:load", (win) => {
+//   const _consoleInfo = win.console.info;
+//   win.console.info = function () {
+//     if (arguments[0].includes("App updated.")) {
+//       cy.$$(".restart", top.document).click();
+//     }
+//     return _consoleInfo.apply(win.console, arguments);
+//   };
+// });
