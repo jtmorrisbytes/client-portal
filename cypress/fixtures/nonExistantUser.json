@@ -1,5 +1,7 @@
 {
   "email": "thisUserDoesNotExistTESTTESTTEST@gmail.com",
+  "badEmailNoAt": "abc123",
+  "badEmailNoDomain": "abc123@.",
   "password": "@d3!,EQ;+G68;E",
   "badPassword": "password",
   "shortPassword": "abc",
@@ -8,5 +10,6 @@
   "lastName": "Doe",
   "streetAddress": "123 California way",
   "city": "Somewheresvilee",
-  "state": "California"
+  "state": "California",
+  "zip": 54321
 }

@@ -34,8 +34,6 @@ describe("The Register component", () => {
     cy.get("@register")
       .get("label[for='email']")
       .should("have.text", "Email Address");
-    //email
-
     // password label
     cy.get("@register")
       .get("label[for='password']")
@@ -56,5 +54,28 @@ describe("The Register component", () => {
     cy.get("@registerButton")
       .should("have.text", "Register")
       .should("be.disabled");
+  });
+  it("should allow all fields to by typed into", () => {
+    cy.fixture("nonExistantUser").then((user) => {
+      cy.get("@email").type(user.email).should("have.value", user.email);
+      cy.get("@password")
+        .type(user.password)
+        .should("have.value", user.password);
+      cy.get("@confirmPassword")
+        .type(user.password)
+        .should("have.value", user.password);
+      cy.get("@address")
+        .type(user.streetAddress)
+        .should("have.value", user.streetAddress);
+      cy.get("@city").type(user.city).should("have.value", user.city);
+      cy.get("@state").type(user.state).should("have.value", user.state);
+      cy.get("@zip").type(user.zip).should("have.value", user.zip);
+    });
+  });
+  it("should validate the email address on the client", () => {
+    cy.fixture("nonExistantUser").then((user) => {
+      console.log("chai user", user);
+      cy.get("@email").type(user.badEmailNoAt);
+    });
   });
 });
