@@ -8,7 +8,7 @@ import type { IName } from "@jtmorrisbytes/lib/Name";
 import * as NAME from "@jtmorrisbytes/lib/Name";
 import * as PASSWORD from "@jtmorrisbytes/lib/Password";
 import { Password } from "@jtmorrisbytes/lib/Password";
-import * as EMAIL from "@jtmorrisbytes/lib/Email";
+import * as EmailErrors from "@jtmorrisbytes/lib/Email/Errors";
 import { Email } from "@jtmorrisbytes/lib/Email";
 
 interface Props {}
@@ -19,6 +19,7 @@ interface State {
     isValid: boolean;
     value: string;
   };
+  emailError: string;
   password: {
     isValid: boolean;
     value: string;
@@ -36,6 +37,7 @@ class Register extends React.Component<Props, State> {
       firstName: new Name(""),
       lastName: new Name(""),
       email: Email(""),
+      emailError: "",
       password: Password(""),
       streetAddress: "",
       city: "",
@@ -45,8 +47,16 @@ class Register extends React.Component<Props, State> {
     // this line is correct. getAuthState
     // is imported externally
     this.getAuthState = getAuthState.bind(this);
+    this.handleEmailInput = this.handleEmailInput.bind(this);
   }
   getAuthState() {}
+  handleSubmit(e) {
+    e.preventDefault();
+  }
+  handleEmailInput(e) {
+    let newEmail = Email(e.target.value);
+    this.setState({ ...this.state, email: newEmail });
+  }
   render() {
     return (
       <Container>
@@ -57,9 +67,16 @@ class Register extends React.Component<Props, State> {
                 <Form.Label>Email Address</Form.Label>
                 <Form.Control
                   type="email"
+                  onChange={this.handleEmailInput}
+                  value={String(this.state.email.value)}
                   placeholder={"johnDoe@gmail.com"}
                   required
                 />
+                {this.state.email.isValid === false ? (
+                  <Form.Text id={"email-invalid"} className="text-danger">
+                    {EmailErrors.EInvalid.MESSAGE}
+                  </Form.Text>
+                ) : null}
               </Form.Group>
               <Form.Group controlId="password">
                 <Form.Label>Password</Form.Label>
@@ -68,6 +85,7 @@ class Register extends React.Component<Props, State> {
               <Form.Group controlId="confirmPassword">
                 <Form.Label>Confirm Password</Form.Label>
                 <Form.Control type="password" required />
+                {/* <Form */}
               </Form.Group>
               <Form.Group controlId="streetAddress">
                 <Form.Label>Street Address</Form.Label>

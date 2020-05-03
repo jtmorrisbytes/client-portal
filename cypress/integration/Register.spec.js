@@ -69,7 +69,7 @@ describe("The Register component", () => {
         .should("have.value", user.streetAddress);
       cy.get("@city").type(user.city).should("have.value", user.city);
       cy.get("@state").type(user.state).should("have.value", user.state);
-      cy.get("@zip").type(user.zip).should("have.value", user.zip);
+      cy.get("@zip").type(user.zip).should("have.value", String(user.zip));
     });
   });
   it("should validate the email address on the client", () => {
