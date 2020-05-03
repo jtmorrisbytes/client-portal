@@ -90,4 +90,17 @@ describe("The Register component", () => {
       cy.get("#email-invalid.text-danger").should("not.exist");
     });
   });
+  it("should validate passwords on the client", () => {
+    cy.fixture("nonExistantUser").then((user) => {
+      console.log("chai user", user);
+      cy.get("@password").type(user.badPassword);
+      cy.get("#password-invalid.text-danger").should("exist");
+      cy.get("@password").clear();
+      cy.get("#password-invalid.text-danger").should("exist");
+      cy.get("@password").type(user.longPassword);
+      cy.get("#password-invalid.text-danger").should("exist");
+      cy.get("@password").clear().type(user.password);
+      cy.get("#password-invalid.text-danger").should("not.exist");
+    });
+  });
 });

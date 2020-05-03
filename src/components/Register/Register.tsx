@@ -24,7 +24,9 @@ interface State {
     isValid: boolean;
     value: string;
     toString: Function;
+    error: any;
   };
+  passwordConfirmation: string;
   streetAddress: string;
   city: string;
   state: string;
@@ -39,6 +41,7 @@ class Register extends React.Component<Props, State> {
       email: Email(""),
       emailError: "",
       password: Password(""),
+      passwordConfirmation: "",
       streetAddress: "",
       city: "",
       state: "",
@@ -48,6 +51,7 @@ class Register extends React.Component<Props, State> {
     // is imported externally
     this.getAuthState = getAuthState.bind(this);
     this.handleEmailInput = this.handleEmailInput.bind(this);
+    this.handlePasswordInput = this.handlePasswordInput.bind(this);
   }
   getAuthState() {}
   handleSubmit(e) {
@@ -55,6 +59,12 @@ class Register extends React.Component<Props, State> {
   }
   handleEmailInput(e) {
     this.setState({ ...this.state, email: Email(e.target.value) });
+  }
+  handlePasswordInput(e) {
+    this.setState({ ...this.state, password: Password(e.target.value) });
+  }
+  handlePasswordConfirmationInput(e) {
+    this.setState({ ...this.state, passwordConfirmation: e.target.value });
   }
   render() {
     return (
@@ -79,8 +89,18 @@ class Register extends React.Component<Props, State> {
               </Form.Group>
               <Form.Group controlId="password">
                 <Form.Label>Password</Form.Label>
-                <Form.Control type="password" required />
+                <Form.Control
+                  type="password"
+                  onChange={this.handlePasswordInput}
+                  value={this.state.password.value}
+                  required
+                />
               </Form.Group>
+              {this.state.password.isValid === false ? (
+                <Form.Text id={"password-invalid"} className="text-danger">
+                  {this.state.password.error.MESSAGE}
+                </Form.Text>
+              ) : null}
               <Form.Group controlId="confirmPassword">
                 <Form.Label>Confirm Password</Form.Label>
                 <Form.Control type="password" required />
