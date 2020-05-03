@@ -1,4 +1,4 @@
-const { nonExistantUser } = require("./constants");
+const { nonExistantUser } = require("../fixtures/constants");
 describe("when the user visits the app", () => {
   it(
     "should alert the user if they havent registered yet" +
