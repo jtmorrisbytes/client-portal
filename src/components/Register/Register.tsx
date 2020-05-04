@@ -10,6 +10,9 @@ import * as PASSWORD from "@jtmorrisbytes/lib/Password";
 import { Password } from "@jtmorrisbytes/lib/Password";
 import * as EmailErrors from "@jtmorrisbytes/lib/Email/Errors";
 import { Email } from "@jtmorrisbytes/lib/Email";
+import Axios from "axios";
+import type { AxiosError } from "axios";
+import { registerApiUrl } from "../../store/constants";
 
 interface Props {}
 interface State {
@@ -32,6 +35,7 @@ interface State {
   city: string;
   state: string;
   zip: string;
+  // [any:any]:any
 }
 class Register extends React.Component<Props, State> {
   constructor(props) {
@@ -57,10 +61,68 @@ class Register extends React.Component<Props, State> {
     this.handlePasswordConfirmationInput = this.handlePasswordConfirmationInput.bind(
       this
     );
+    this.handlePhoneInput = this.handlePhoneInput.bind(this);
+    this.handleEnableSubmit = this.handleEnableSubmit.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleFirstNameInput = this.handleFirstNameInput.bind(this);
+    this.handleLastNameInput = this.handleLastNameInput.bind(this);
+    this.handleInput = this.handleInput.bind(this);
+  }
+  handleFirstNameInput(e) {
+    this.setState({ ...this.state, firstName: new Name(e.target.value) });
+  }
+  handleLastNameInput(e) {
+    this.setState({ ...this.state, lastName: new Name(e.target.value) });
   }
   getAuthState() {}
   handleSubmit(e) {
     e.preventDefault();
+    console.log("submitting form auth state", this.getAuthState());
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      phone,
+      streetAddress,
+      city,
+      state,
+      zip,
+    } = this.state;
+    console.log(
+      "creating user",
+      `firstName: ${firstName.value || undefined}`,
+      `lastName: ${lastName.value || undefined}`,
+      `email: ${email.value}`,
+      password,
+      phone,
+      city,
+      state,
+      zip
+    );
+    Axios.post(registerApiUrl + "?test=true", {
+      state: this.getAuthState(),
+      user: {
+        firstName: firstName.value,
+        lastName: lastName.value,
+        email: email.value,
+        password: password.value,
+        phoneNumber: phone,
+        streetAddress,
+        city,
+        state,
+        zip,
+      },
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          // dispatch the session
+        }
+      })
+      .catch((err: AxiosError) => {
+        if (err.response?.data) {
+        }
+      });
   }
   handleEmailInput(e) {
     this.setState({ ...this.state, email: Email(e.target.value) });
@@ -71,27 +133,59 @@ class Register extends React.Component<Props, State> {
   handlePasswordConfirmationInput(e) {
     this.setState({ ...this.state, passwordConfirmation: e.target.value });
   }
+  handleEnableSubmit(): boolean {
+    return !(
+      this.state.password.isValid &&
+      this.state.email.isValid &&
+      this.state.password.value === this.state.passwordConfirmation &&
+      this.state.phone.length === 10
+    );
+  }
   handlePhoneInput(e) {
     console.log("phone number", e);
-    this.setState({
-      ...this.state,
-      phone: e.target.value <= 10 ? e.target.value : this.state.phone,
-    });
+    if (e.target.value.length <= 10) {
+      this.setState({
+        ...this.state,
+        phone: e.target.value,
+      });
+    }
+  }
+  handleInput(e) {
+    this.setState({ ...this.state, [e.target.id]: e.target.value });
   }
   render() {
-    console.log(
-      "password",
-      this.state.password.value,
-      "passwordconfirm",
+    // console.log(
+    //   "password",
+    //   this.state.password.value,
+    //   "passwordconfirm",
 
-      this.state.passwordConfirmation
-    );
+    //   this.state.passwordConfirmation
+    // );
     return (
       <Container>
         <Row>
           <Col>
-            <Form name="register">
+            <Form name="register" onSubmit={this.handleSubmit}>
               <Form.Group controlId="email">
+                <Form.Group controlId="firstName">
+                  <Form.Label>First Name</Form.Label>
+                  <Form.Control
+                    value={this.state.firstName.value}
+                    onChange={this.handleFirstNameInput}
+                    type="text"
+                    placeholder={"Johnny"}
+                    required
+                  />
+                </Form.Group>
+                <Form.Group controlId="lastName">
+                  <Form.Label>Last Name</Form.Label>
+                  <Form.Control
+                    value={this.state.lastName.value}
+                    onChange={this.handleLastNameInput}
+                    type="text"
+                    placeholder={"Bravo"}
+                  />
+                </Form.Group>
                 <Form.Label>Email Address</Form.Label>
                 <Form.Control
                   type="email"
@@ -140,33 +234,59 @@ class Register extends React.Component<Props, State> {
                 <Form.Control
                   name="phone"
                   type="tel"
-                  minLength={10}
+                  onChange={this.handlePhoneInput}
                   maxLength={10}
+                  value={this.state.phone}
                   placeholder="1234567890"
                 />
+
+                {this.state.phone.length < 10 ? (
+                  <Form.Text id={"phone-too-short"} className="text-danger">
+                    Phone Number is too short
+                  </Form.Text>
+                ) : null}
               </Form.Group>
-              {this.state.phone.length < 10 ? (
-                <Form.Text id={"phone-too-short"} className="text-danger">
-                  Phone Number is too short
-                </Form.Text>
-              ) : null}
               <Form.Group controlId="streetAddress">
                 <Form.Label>Street Address</Form.Label>
-                <Form.Control name="address" placeholder="123 Software Way" />
+                <Form.Control
+                  value={this.state.streetAddress}
+                  onChange={this.handleInput}
+                  name="address"
+                  placeholder="123 Software Way"
+                />
               </Form.Group>
               <Form.Group controlId="city">
                 <Form.Label>City</Form.Label>
-                <Form.Control name="city" placeholder="Silicon Valley" />
+                <Form.Control
+                  value={this.state.city}
+                  onChange={this.handleInput}
+                  name="city"
+                  placeholder="Silicon Valley"
+                />
               </Form.Group>
               <Form.Group controlId="state">
                 <Form.Label>State</Form.Label>
-                <Form.Control name="state" placeholder="California" />
+                <Form.Control
+                  value={this.state.state}
+                  onChange={this.handleInput}
+                  name="state"
+                  placeholder="California"
+                />
               </Form.Group>
               <Form.Group controlId="zip">
                 <Form.Label>Zip</Form.Label>
-                <Form.Control name="zip" placeholder="12345" />
+                <Form.Control
+                  value={this.state.zip}
+                  onChange={this.handleInput}
+                  name="zip"
+                  placeholder="12345"
+                />
               </Form.Group>
-              <Button type="submit" name="register" block disabled>
+              <Button
+                type="submit"
+                name="register"
+                block
+                disabled={this.handleEnableSubmit()}>
                 Register
               </Button>
             </Form>
