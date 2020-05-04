@@ -85,11 +85,15 @@ class Login extends React.Component<Props, State> {
     }
     // console.log("getting state from query", params.get("state"));
     console.log("trying to log in with state variable", state);
-    Axios.post(loginApiUrl, {
-      state,
-      email: this.state.email,
-      password: this.state.password,
-    })
+    Axios.post(
+      loginApiUrl,
+      {
+        state,
+        email: this.state.email,
+        password: this.state.password,
+      },
+      { withCredentials: true }
+    )
       .then((res) => {
         console.log(res);
         this.props.getLoggedInUser();

@@ -31,7 +31,7 @@ function getLoggedInUserPending() {
 export function getLoggedInUser() {
   return (dispatch) => {
     dispatch(getLoggedInUserPending());
-    Axios.get(userApiUrl)
+    Axios.get(userApiUrl, { withCredentials: true })
       .then((res) => {
         dispatch(getLoggedInUserResolved(res.data as TUser));
       })
@@ -41,6 +41,8 @@ export function getLoggedInUser() {
           err
         );
         console.dir(err);
+        console.log("GET_LOGGED_IN_USER: headers", err.response?.headers);
+        console.log("GET_LOGGED_IN_USER: headers", err.response?.headers);
         if (err.response?.data?.TYPE) {
           console.info("GET_LOGGED_IN_USER: SWITCH TYPE");
           switch (err.response.data.TYPE) {
