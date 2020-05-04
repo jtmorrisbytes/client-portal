@@ -17,7 +17,9 @@ import * as Response from "@jtmorrisbytes/lib/Response";
 import * as Auth from "@jtmorrisbytes/lib/Auth";
 import * as Nist from "@jtmorrisbytes/lib/Nist";
 
-interface Props {}
+interface Props {
+  requestRedirect: typeof requestRedirect;
+}
 interface State {
   firstName: IName;
   lastName: IName;
@@ -131,6 +133,9 @@ class Register extends React.Component<Props, State> {
             // dispatch the session
             this.setState({ loading: false }, () => {
               console.log("registration success");
+              this.props.requestRedirect("REGISTER_SUCCESS", "", {});
+              // cheating for now:
+              window.location.replace("/");
             });
           }
         })

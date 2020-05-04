@@ -2,12 +2,14 @@
 
 const EmailErrors = require("@jtmorrisbytes/lib/Email/Errors");
 
-function fillRegistrationForm(fixture) {
+function fillRegistrationForm(fixture, random) {
+  let email = fixture.email;
+  if (random === true) {
+    email = String(Math.floor(Math.random() * 9999)) + email;
+  }
   cy.get("@firstName").type(fixture.firstName);
   cy.get("@lastName").type(fixture.lastName);
-  cy.get("@email").type(
-    String(Math.floor(Math.random() * 9999)) + fixture.email
-  );
+  cy.get("@email").type(email);
   cy.get("@password").type(fixture.password);
   cy.get("@confirmPassword").type(fixture.password);
   cy.get("@phone").type(fixture.phone);
@@ -16,45 +18,49 @@ function fillRegistrationForm(fixture) {
   cy.get("@city").type(fixture.city);
   cy.get("@state").type(fixture.state);
   cy.get("@zip").type(fixture.zip);
+  cy.server();
+  cy.route("POST", "/api/auth/register?test=true").as("requestRegister");
+}
+function getRegInputs() {
+  cy.get("form[name='register']").as("register");
+  cy.get("@register").get("input[id='email'][type='email']").as("email");
+  //first name
+  cy.get("@register").get("input[id='firstName']").as("firstName");
+  cy.get("@register").get("input[id='lastName']").as("lastName");
+  //password
+  cy.get("@register")
+    .get("input[id='password'][type='password']")
+    .as("password");
+  cy.get("@register")
+    .get("input[id='confirmPassword'][type='password']")
+    .as("confirmPassword");
+
+  //phone number
+  cy.get("@register").get("input[id='phone'][type='tel']").as("phone");
+
+  // street address input
+  cy.get("@register")
+    .get("input[id='streetAddress'][name='address']")
+    .as("address");
+  // city input
+  cy.get("@register").get("input[id='city'][name='city']").as("city");
+  // state input
+  cy.get("@register").get("input[id='state'][name=state]").as("state");
+  cy.get("@register").get("input[id='zip'][name=zip]").as("zip");
+  cy.get("@register")
+    .get("button[type='submit'][name='register']")
+    .as("registerButton");
 }
 
 describe("The Register component", () => {
   beforeEach(() => {
     cy.visit("/");
     cy.url().should("include", "/login");
-    cy.location("hash");
     cy.get("a.btn[name='register']").click();
     cy.url().should("include", "register");
     // ensure that login redirected with the state variable
     cy.location("hash").should("include", "?state=");
-    cy.get("form[name='register']").as("register");
-    cy.get("@register").get("input[id='email'][type='email']").as("email");
-    //first name
-    cy.get("@register").get("input[id='firstName']").as("firstName");
-    cy.get("@register").get("input[id='lastName']").as("lastName");
-    //password
-    cy.get("@register")
-      .get("input[id='password'][type='password']")
-      .as("password");
-    cy.get("@register")
-      .get("input[id='confirmPassword'][type='password']")
-      .as("confirmPassword");
-
-    //phone number
-    cy.get("@register").get("input[id='phone'][type='tel']").as("phone");
-
-    // street address input
-    cy.get("@register")
-      .get("input[id='streetAddress'][name='address']")
-      .as("address");
-    // city input
-    cy.get("@register").get("input[id='city'][name='city']").as("city");
-    // state input
-    cy.get("@register").get("input[id='state'][name=state]").as("state");
-    cy.get("@register").get("input[id='zip'][name=zip]").as("zip");
-    cy.get("@register")
-      .get("button[type='submit'][name='register']")
-      .as("registerButton");
+    getRegInputs();
   });
   it("should have the correct labels and label text", () => {
     //firstName
@@ -205,27 +211,20 @@ describe("The Register component", () => {
         expect(sess.user.state).to.equal(user.state);
         expect(sess.user.zip).to.equal(String(user.zip));
       });
-      // it should fail the second time
+    });
+  });
+  it("should return an error if the user already exists", () => {
+    cy.fixture("nonExistantUser").then((user) => {
+      fillRegistrationForm(user, false);
       cy.get("@registerButton").click();
       cy.wait("@requestRegister").then((xhr) => {
-        expect(xhr.status).to.equal(401);
-        cy.get("div[name='registrationError']")
-          .as("registrationError")
-          .should("exist")
-          .should("be.visible");
-        cy.get("@password").should("have.value", "");
-        cy.get("@confirmPassword").should("have.value", "");
-        cy.get("@registrationError").get("button.close").should("exist");
-        cy.get("@registrationError").get("button.close").click();
-        cy.get("@registrationError").should("not.be.visible");
+        expect(xhr.status).to.eq(401);
       });
     });
   });
   it("should redirect the user after a sucessful registration", () => {
-    cy.server();
-    cy.route("POST", "/api/auth/register?test=true").as("requestRegister");
     cy.fixture("nonExistantUser").then((user) => {
-      fillRegistrationForm(user);
+      fillRegistrationForm(user, true);
       cy.get("@registerButton").click();
       cy.wait("@requestRegister").then((xhr) => {
         cy.location("hash").should("equal", "#/");
