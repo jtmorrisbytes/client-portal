@@ -36,9 +36,17 @@ export function getLoggedInUser() {
         dispatch(getLoggedInUserResolved(res.data as TUser));
       })
       .catch((err: AxiosError) => {
+        console.warn(
+          "GET_LOGGED_IN_USER: the server responded with an error",
+          err
+        );
+        console.dir(err);
         if (err.response?.data?.TYPE) {
+          console.info("GET_LOGGED_IN_USER: SWITCH TYPE");
           switch (err.response.data.TYPE) {
             case Auth.ELoginRequired.TYPE:
+            case "LOGIN_REQUIRED":
+              console.info("GET_LOGGED_IN_USER: LOGIN REQUIRED");
               dispatch(getLoggedInUserRejected(Auth.ELoginRequired));
               break;
             case Errors.EReferenceError.TYPE:
@@ -64,6 +72,8 @@ export function getLoggedInUser() {
             case Response.EBadRequest.CODE:
               dispatch(getLoggedInUserRejected(Response.EBadRequest));
               break;
+            case Auth.ELoginRequired.CODE:
+              dispatch(getLoggedInUserRejected(Auth.ELoginRequired));
             default:
               dispatch(getLoggedInUserRejected(Response.EGeneralFailure));
           }
@@ -108,6 +118,7 @@ export function userReducer(_state = IState, action: any) {
   let state = _state;
   switch (type) {
     case GET_LOGGED_IN_USER_PENDING:
+      console.log("GET_LOGGED_IN_USER_PENDING");
       return { ..._state, loading: true };
     case GET_LOGGED_IN_USER_FULFILLED:
       payload = payload as TUser;
@@ -124,6 +135,7 @@ export function userReducer(_state = IState, action: any) {
         loading: false,
       };
     case GET_LOGGED_IN_USER_REJECTED:
+      console.error("GET_LOGGED_IN_USER_REJECTED", payload);
       return { ..._state, error: payload };
     default:
       return _state;
