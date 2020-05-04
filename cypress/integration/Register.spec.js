@@ -174,6 +174,7 @@ describe("The Register component", () => {
       cy.get("@state").type(user.state);
       cy.get("@zip").type(user.zip);
       cy.get("@registerButton").click();
+      cy.get("@registerButton").should("be.disabled");
       cy.wait("@requestRegister").then((xhr) => {
         console.log(xhr);
         expect(xhr.status).to.equal(

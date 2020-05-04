@@ -13,6 +13,8 @@ import { Email } from "@jtmorrisbytes/lib/Email";
 import Axios from "axios";
 import type { AxiosError } from "axios";
 import { registerApiUrl } from "../../store/constants";
+import * as Response from "@jtmorrisbytes/lib/Response";
+import * as Auth from "@jtmorrisbytes/lib/Auth";
 
 interface Props {}
 interface State {
@@ -36,6 +38,7 @@ interface State {
   state: string;
   zip: string;
   // [any:any]:any
+  loading: boolean;
 }
 class Register extends React.Component<Props, State> {
   constructor(props) {
@@ -52,6 +55,7 @@ class Register extends React.Component<Props, State> {
       city: "",
       state: "",
       zip: "",
+      loading: false,
     };
     // this line is correct. getAuthState
     // is imported externally
@@ -77,52 +81,85 @@ class Register extends React.Component<Props, State> {
   getAuthState() {}
   handleSubmit(e) {
     e.preventDefault();
-    console.log("submitting form auth state", this.getAuthState());
-    const {
-      firstName,
-      lastName,
-      email,
-      password,
-      phone,
-      streetAddress,
-      city,
-      state,
-      zip,
-    } = this.state;
-    console.log(
-      "creating user",
-      `firstName: ${firstName.value || undefined}`,
-      `lastName: ${lastName.value || undefined}`,
-      `email: ${email.value}`,
-      password,
-      phone,
-      city,
-      state,
-      zip
-    );
-    Axios.post(registerApiUrl + "?test=true", {
-      state: this.getAuthState(),
-      user: {
-        firstName: firstName.value,
-        lastName: lastName.value,
-        email: email.value,
-        password: password.value,
-        phoneNumber: phone,
+    this.setState({ ...this.state, loading: true }, () => {
+      console.log("submitting form auth state", this.getAuthState());
+      const {
+        firstName,
+        lastName,
+        email,
+        password,
+        phone,
         streetAddress,
         city,
         state,
         zip,
-      },
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          // dispatch the session
-        }
+      } = this.state;
+      console.log(
+        "creating user",
+        `firstName: ${firstName.value || undefined}`,
+        `lastName: ${lastName.value || undefined}`,
+        `email: ${email.value}`,
+        password,
+        phone,
+        city,
+        state,
+        zip
+      );
+      Axios.post(registerApiUrl + "?test=true", {
+        state: this.getAuthState(),
+        user: {
+          firstName: firstName.value,
+          lastName: lastName.value,
+          email: email.value,
+          password: password.value,
+          phoneNumber: phone,
+          streetAddress,
+          city,
+          state,
+          zip,
+        },
       })
-      .catch((err: AxiosError) => {
-        if (err.response?.data) {
-        }
-      });
+        .then((res) => {
+          if (res.status === 200) {
+            // dispatch the session
+            this.setState({ loading: false }, () => {
+              console.log("registration success");
+            });
+          }
+        })
+        .catch((err: AxiosError) => {
+          let error = Response.EGeneralFailure;
+          switch (err.response?.status) {
+            case 400:
+              switch (err.response.data?.TYPE) {
+                case EmailErrors.EInvalid:
+                  error = EmailErrors.EInvalid;
+                  break;
+                default:
+                  error = Response.EBadRequest;
+                  break;
+              }
+              break;
+            case 401:
+              break;
+            case 422:
+              switch (err.response.data?.TYPE) {
+                case Auth.EAuthStateNotFound.TYPE:
+                  error = Auth.EAuthStateNotFound;
+                  break;
+                case EmailErrors.EMissing.TYPE:
+                  error = EmailErrors.EMissing;
+                  break;
+                default:
+                  error = Response.EMissing;
+              }
+              break;
+            default:
+              // a general error occurred
+              console.log(err);
+          }
+        });
+    });
   }
   handleEmailInput(e) {
     this.setState({ ...this.state, email: Email(e.target.value) });
@@ -138,7 +175,8 @@ class Register extends React.Component<Props, State> {
       this.state.password.isValid &&
       this.state.email.isValid &&
       this.state.password.value === this.state.passwordConfirmation &&
-      this.state.phone.length === 10
+      this.state.phone.length === 10 &&
+      !this.state.loading
     );
   }
   handlePhoneInput(e) {
