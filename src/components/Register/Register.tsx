@@ -175,6 +175,7 @@ class Register extends React.Component<Props, State> {
               // a general error occurred
               console.log(err);
           }
+          console.log(err);
           this.setState({
             ...this.state,
             password: Password(""),
@@ -227,6 +228,8 @@ class Register extends React.Component<Props, State> {
         <Row>
           <Col>
             <Alert
+              variant="danger"
+              name="registrationError"
               show={(this.state.registrationError?.MESSAGE || "").length > 0}
               dismissible
               onClose={this.clearErrors}>

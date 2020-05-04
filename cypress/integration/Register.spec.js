@@ -189,6 +189,20 @@ describe("The Register component", () => {
         expect(sess.user.state).to.equal(user.state);
         expect(sess.user.zip).to.equal(String(user.zip));
       });
+      // it should fail the second time
+      cy.get("@registerButton").click();
+      cy.wait("@requestRegister").then((xhr) => {
+        expect(xhr.status).to.equal(401);
+        cy.get("div[name='registrationError']")
+          .as("registrationError")
+          .should("exist")
+          .should("be.visible");
+        cy.get("@password").should("have.value", "");
+        cy.get("@confirmPassword").should("have.value", "");
+        cy.get("@registrationError").get("button.close").should("exist");
+        cy.get("@registrationError").get("button.close").click();
+        cy.get("@registrationError").should("not.be.visible");
+      });
     });
   });
 });
