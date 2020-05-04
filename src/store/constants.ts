@@ -30,3 +30,4 @@ export const authApiUrl = "/api/auth/";
 export const loginApiUrl = "/api/auth/login";
 export const logoutApiUrl = "/api/auth/logout";
 export const registerApiUrl = "/api/auth/register";
+export const userApiUrl = "/api/user";

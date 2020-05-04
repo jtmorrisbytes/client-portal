@@ -1,4 +1,4 @@
-const { nonExistantUser } = require("../fixtures/constants");
+const { user } = require("../../fixtures/constants");
 describe("when the user visits the app", () => {
   it(
     "should alert the user if they havent registered yet" +
@@ -10,10 +10,10 @@ describe("when the user visits the app", () => {
 
       cy.get("input[type='email'][name='email']")
         .as("emailInput")
-        .type(nonExistantUser.email);
+        .type("hello" + user.email);
       cy.get("input[type='password'][name='password']")
         .as("passwordInput")
-        .type(nonExistantUser.password);
+        .type(user.password);
       cy.server();
       cy.route("POST", "**/api/auth/login").as("login");
       cy.get("button[type='submit'][name='login']")

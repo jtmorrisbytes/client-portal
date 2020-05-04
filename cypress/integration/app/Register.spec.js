@@ -100,7 +100,7 @@ describe("The Register component", () => {
       .should("be.disabled");
   });
   it("should allow all fields to by typed into", () => {
-    cy.fixture("nonExistantUser").then((user) => {
+    cy.fixture("user").then((user) => {
       cy.get("@firstName")
         .type(user.firstName)
         .should("have.value", user.firstName);
@@ -124,7 +124,7 @@ describe("The Register component", () => {
     });
   });
   it("should validate the email address on the client", () => {
-    cy.fixture("nonExistantUser").then((user) => {
+    cy.fixture("user").then((user) => {
       console.log("chai user", user);
       cy.get("@email").type(user.badEmailNoAt);
       cy.get("#email-invalid.text-danger").should(
@@ -140,7 +140,7 @@ describe("The Register component", () => {
     });
   });
   it("should validate passwords on the client", () => {
-    cy.fixture("nonExistantUser").then((user) => {
+    cy.fixture("user").then((user) => {
       cy.get("@password").type(user.badPassword);
       cy.get("#password-invalid.text-danger").should("exist");
       cy.get("@password").clear();
@@ -152,7 +152,7 @@ describe("The Register component", () => {
     });
   });
   it("should require the user to confirm their password", () => {
-    cy.fixture("nonExistantUser").then((user) => {
+    cy.fixture("user").then((user) => {
       cy.get("@password").type(user.password);
       cy.get("#password-no-match.form-text.text-danger")
         .should("exist")
@@ -162,7 +162,7 @@ describe("The Register component", () => {
     });
   });
   it("should require user to enter their phone number", () => {
-    cy.fixture("nonExistantUser").then((user) => {
+    cy.fixture("user").then((user) => {
       cy.get("#phone-too-short.form-text.text-danger")
         .should("exist")
         .should("have.text", "Phone Number is too short");
@@ -171,7 +171,7 @@ describe("The Register component", () => {
     });
   });
   it("should enable the registration button after all required fields are entered", () => {
-    cy.fixture("nonExistantUser").then((user) => {
+    cy.fixture("user").then((user) => {
       cy.get("@email").type(user.email);
       cy.get("@password").type(user.password);
       cy.get("@confirmPassword").type(user.password);
@@ -182,7 +182,7 @@ describe("The Register component", () => {
   it("should sucessfully register the user", () => {
     cy.server();
     cy.route("POST", "/api/auth/register?test=true").as("requestRegister");
-    cy.fixture("nonExistantUser").then((user) => {
+    cy.fixture("user").then((user) => {
       let randomEmail = String(Math.floor(Math.random() * 9999)) + user.email;
       cy.get("@firstName").type(user.firstName);
       cy.get("@lastName").type(user.lastName);
@@ -214,7 +214,7 @@ describe("The Register component", () => {
     });
   });
   it("should return an error if the user already exists", () => {
-    cy.fixture("nonExistantUser").then((user) => {
+    cy.fixture("user").then((user) => {
       fillRegistrationForm(user, false);
       cy.get("@registerButton").click();
       cy.wait("@requestRegister").then((xhr) => {
@@ -223,7 +223,7 @@ describe("The Register component", () => {
     });
   });
   it("should redirect the user after a sucessful registration", () => {
-    cy.fixture("nonExistantUser").then((user) => {
+    cy.fixture("user").then((user) => {
       fillRegistrationForm(user, true);
       cy.get("@registerButton").click();
       cy.wait("@requestRegister").then((xhr) => {

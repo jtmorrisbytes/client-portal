@@ -17,12 +17,7 @@ import Axios from "axios";
 //   type: string;
 //   payload: any;
 // };
-export type TUser = {
-  userId: number;
-  email?: string;
-  firstName?: string;
-  lastName?: string;
-};
+
 export type TAuth = {
   loading: boolean;
   state: string;
@@ -36,7 +31,6 @@ export type TCookie = {
 };
 export type TSession = {
   cookie: TCookie | null;
-  user: null | TUser;
   ipAddr: string;
   loading: boolean;
   error?: {
@@ -54,7 +48,6 @@ export type TSession = {
 
 const initialState: TSession = {
   cookie: null,
-  user: null,
   ipAddr: "",
   loading: true,
   auth: {
@@ -94,7 +87,7 @@ export function checkSessionStatus() {
           );
           return;
         } else if (typeof response.data === "object") {
-          // console.log("CHECK SESSION STATUS FULFILLED");
+          console.log("CHECK SESSION STATUS FULFILLED:", response.data);
           dispatch({
             type: CHECK_SESSION_STATUS_FULFILLED,
             payload: response.data,
@@ -148,7 +141,6 @@ export function sessionReducer(state = initialState, action: any): TSession {
         return {
           ...state,
           cookie: payload.cookie,
-          user: payload.user || null,
           loading: false,
         };
       } else {

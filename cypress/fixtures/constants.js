@@ -1,5 +1,5 @@
 module.exports = {
-  nonExistantUser: {
+  user: {
     email: "thisUserDoesNotExistTESTTESTTEST@gmail.com",
     password: "@d3!,EQ;+G68;E",
     badPassword: "password",

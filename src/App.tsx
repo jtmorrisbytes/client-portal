@@ -18,7 +18,8 @@ import {
   endRouteTransition,
 } from "./store/routes";
 import { REDIRECT_LOGIN } from "./store/constants";
-import type { TSession, TUser, TAuth } from "./store/session";
+import type { TSession, TAuth } from "./store/session";
+import { TUser, getLoggedInUser } from "./store/user";
 import { Redirect, RouteComponentProps, withRouter } from "react-router-dom";
 import Routes from "./routes";
 type State = {};
@@ -27,7 +28,7 @@ interface Props extends RouteComponentProps<any> {
   ipAddr: string;
 
   cookie: TCookie;
-  user: TUser | null;
+  user: TUser;
   auth: TAuth;
   router: TRouter;
   sessionError: object;
@@ -36,12 +37,14 @@ interface Props extends RouteComponentProps<any> {
   requestRedirect: typeof requestRedirect;
   notifyRedirectInterstitial: typeof notifyRedirectInterstitial;
   endRouteTransition: typeof endRouteTransition;
+  getLoggedInUser: typeof getLoggedInUser;
   dispatch: Function;
 }
 
 class App extends React.Component<Props, State> {
   componentDidMount() {
     this.props.getSessionStatus();
+    this.props.getLoggedInUser();
   }
   componentDidUpdate() {
     console.log(
@@ -54,7 +57,7 @@ class App extends React.Component<Props, State> {
     );
     let str = "App Component did update:";
     if (this.props.sessionLoading === false) {
-      if (this.props.user === null) {
+      if (this.props.user.id === null) {
         console.log("the user was not logged in");
         if (
           this.props.auth.state.length === 0 &&
@@ -118,12 +121,12 @@ class App extends React.Component<Props, State> {
 }
 
 function mapStateToProps(state: any): Object {
-  const { session, auth, router } = state;
+  const { session, auth, router, user } = state;
   return {
     sessionLoading: session.loading,
     ipAddr: session.ipAddr,
     cookie: session.cookie,
-    user: session.user,
+    user,
     router,
     auth,
     sessionError: session.error,
@@ -144,6 +147,7 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(notifyRedirectInterstitial());
     },
     endRouteTransition: () => dispatch(endRouteTransition()),
+    getLoggedInUser: () => dispatch(getLoggedInUser()),
     // startAuthSession,
     // updateSession,
     dispatch,

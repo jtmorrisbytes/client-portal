@@ -9,6 +9,8 @@ import { LinkContainer } from "react-router-bootstrap";
 import * as UserErrors from "@jtmorrisbytes/lib/User/Errors";
 import { requestRedirect } from "../../store/routes";
 import Axios from "axios";
+import { getLoggedInUser, TUser } from "../../store/user";
+
 import {
   Container,
   ContainerProps,
@@ -22,6 +24,8 @@ interface Props extends RouteComponentProps {
   session: TSession;
   router: TRouter;
   auth: TAuth;
+  user: TUser;
+  getLoggedInUser: typeof getLoggedInUser;
 }
 interface State {
   email: string;
@@ -65,6 +69,12 @@ class Login extends React.Component<Props, State> {
     console.log("handleInputUpdate", name, value || "");
     this.setState({ ...this.state, [name]: value });
   }
+  componentDidUpdate() {
+    if (this.props.user.id) {
+      console.log("User Logged In");
+      requestRedirect("USER_LOGGED_IN", "#/", {});
+    }
+  }
   handleSubmit(e) {
     e.preventDefault();
     // get the state string
@@ -80,7 +90,10 @@ class Login extends React.Component<Props, State> {
       email: this.state.email,
       password: this.state.password,
     })
-      .then(console.log)
+      .then((res) => {
+        console.log(res);
+        this.props.getLoggedInUser();
+      })
       .catch((error) => {
         try {
           let resObj = JSON.parse(error.request.response);
@@ -162,7 +175,12 @@ class Login extends React.Component<Props, State> {
 }
 
 function mapStateToProps(state: any): any {
-  return { session: state.session, router: state.router, auth: state.auth };
+  return {
+    session: state.session,
+    router: state.router,
+    auth: state.auth,
+    user: state.user as TUser,
+  };
 }
-const mapDispachToProps = { requestRedirect };
+const mapDispachToProps = { requestRedirect, getLoggedInUser };
 export default connect(mapStateToProps, mapDispachToProps)(Login);
