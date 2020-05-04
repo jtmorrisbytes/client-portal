@@ -2,6 +2,22 @@
 
 const EmailErrors = require("@jtmorrisbytes/lib/Email/Errors");
 
+function fillRegistrationForm(fixture) {
+  cy.get("@firstName").type(fixture.firstName);
+  cy.get("@lastName").type(fixture.lastName);
+  cy.get("@email").type(
+    String(Math.floor(Math.random() * 9999)) + fixture.email
+  );
+  cy.get("@password").type(fixture.password);
+  cy.get("@confirmPassword").type(fixture.password);
+  cy.get("@phone").type(fixture.phone);
+  cy.get("@registerButton").should("be.enabled");
+  cy.get("@address").type(fixture.streetAddress);
+  cy.get("@city").type(fixture.city);
+  cy.get("@state").type(fixture.state);
+  cy.get("@zip").type(fixture.zip);
+}
+
 describe("The Register component", () => {
   beforeEach(() => {
     cy.visit("/");
@@ -202,6 +218,17 @@ describe("The Register component", () => {
         cy.get("@registrationError").get("button.close").should("exist");
         cy.get("@registrationError").get("button.close").click();
         cy.get("@registrationError").should("not.be.visible");
+      });
+    });
+  });
+  it("should redirect the user after a sucessful registration", () => {
+    cy.server();
+    cy.route("POST", "/api/auth/register?test=true").as("requestRegister");
+    cy.fixture("nonExistantUser").then((user) => {
+      fillRegistrationForm(user);
+      cy.get("@registerButton").click();
+      cy.wait("@requestRegister").then((xhr) => {
+        cy.location("hash").should("equal", "#/");
       });
     });
   });
