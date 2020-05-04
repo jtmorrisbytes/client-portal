@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { getAuthState } from "../functions";
 import { requestRedirect } from "../../store/routes";
-import { Form, Container, Row, Col, Button } from "react-bootstrap";
+import { Form, Container, Row, Col, Button, Alert } from "react-bootstrap";
 import { Name } from "@jtmorrisbytes/lib/Name";
 import type { IName } from "@jtmorrisbytes/lib/Name";
 import * as NAME from "@jtmorrisbytes/lib/Name";
@@ -15,6 +15,7 @@ import type { AxiosError } from "axios";
 import { registerApiUrl } from "../../store/constants";
 import * as Response from "@jtmorrisbytes/lib/Response";
 import * as Auth from "@jtmorrisbytes/lib/Auth";
+import * as Nist from "@jtmorrisbytes/lib/Nist";
 
 interface Props {}
 interface State {
@@ -24,7 +25,9 @@ interface State {
     isValid: boolean;
     value: string;
   };
-  emailError: string;
+  registrationError: {
+    MESSAGE?: string;
+  };
   phone: string;
   password: {
     isValid: boolean;
@@ -48,7 +51,7 @@ class Register extends React.Component<Props, State> {
       lastName: new Name(""),
       email: Email(""),
       phone: "",
-      emailError: "",
+      registrationError: {},
       password: Password(""),
       passwordConfirmation: "",
       streetAddress: "",
@@ -71,12 +74,16 @@ class Register extends React.Component<Props, State> {
     this.handleFirstNameInput = this.handleFirstNameInput.bind(this);
     this.handleLastNameInput = this.handleLastNameInput.bind(this);
     this.handleInput = this.handleInput.bind(this);
+    this.clearErrors = this.clearErrors.bind(this);
   }
   handleFirstNameInput(e) {
     this.setState({ ...this.state, firstName: new Name(e.target.value) });
   }
   handleLastNameInput(e) {
     this.setState({ ...this.state, lastName: new Name(e.target.value) });
+  }
+  clearErrors() {
+    this.setState({ ...this.state, registrationError: {} });
   }
   getAuthState() {}
   handleSubmit(e) {
@@ -135,12 +142,20 @@ class Register extends React.Component<Props, State> {
                 case EmailErrors.EInvalid:
                   error = EmailErrors.EInvalid;
                   break;
+                case PASSWORD.ENotValid.TYPE:
+                  error = PASSWORD.ENotValid;
+                case Nist.ENist.TYPE:
+                  error = Nist.ENist;
                 default:
                   error = Response.EBadRequest;
                   break;
               }
               break;
             case 401:
+              switch (err.response.data?.TYPE) {
+                case EmailErrors.ENotAuthorized.TYPE:
+                  error = EmailErrors.ENotAuthorized;
+              }
               break;
             case 422:
               switch (err.response.data?.TYPE) {
@@ -150,6 +165,8 @@ class Register extends React.Component<Props, State> {
                 case EmailErrors.EMissing.TYPE:
                   error = EmailErrors.EMissing;
                   break;
+                case PASSWORD.EMissing.TYPE:
+                  error = PASSWORD.EMissing;
                 default:
                   error = Response.EMissing;
               }
@@ -158,6 +175,12 @@ class Register extends React.Component<Props, State> {
               // a general error occurred
               console.log(err);
           }
+          this.setState({
+            ...this.state,
+            password: Password(""),
+            passwordConfirmation: "",
+            registrationError: error,
+          });
         });
     });
   }
@@ -203,6 +226,12 @@ class Register extends React.Component<Props, State> {
       <Container>
         <Row>
           <Col>
+            <Alert
+              show={(this.state.registrationError?.MESSAGE || "").length > 0}
+              dismissible
+              onClose={this.clearErrors}>
+              {this.state.registrationError.MESSAGE}
+            </Alert>
             <Form name="register" onSubmit={this.handleSubmit}>
               <Form.Group controlId="email">
                 <Form.Group controlId="firstName">
