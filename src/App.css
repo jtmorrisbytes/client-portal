@@ -6,9 +6,15 @@
   display: none;
 }
 #app-load[data-show="true"] {
-  width: 100vh;
-  height: 100vw;
-  display: block;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
   position: absolute;
+  justify-content: center;
+  align-items: center;
   content: "Loading...";
+  background-color: rgba(200, 200, 200, 0.5);
+  backdrop-filter: blur(5px);
+  font-size: x-large;
+  z-index: 9999;
 }

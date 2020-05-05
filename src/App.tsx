@@ -66,12 +66,13 @@ class App extends React.Component<Props, State> {
   render() {
     // console.log("this.props.session", this.props.auth);
     return (
-      <div
-        id="app-load"
-        data-show={this.props.sessionLoading || this.props.user.loading}>
-        <div className="App">
-          <Routes />
+      <div className="App">
+        <div
+          id="app-load"
+          data-show={this.props.sessionLoading || this.props.user.loading}>
+          LOADING...
         </div>
+        <Routes />
       </div>
     );
   }

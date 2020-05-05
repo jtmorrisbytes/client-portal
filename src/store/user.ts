@@ -118,7 +118,7 @@ export function userReducer(_state = IState, action: any) {
       };
     case GET_LOGGED_IN_USER_REJECTED:
       console.error("GET_LOGGED_IN_USER_REJECTED", payload);
-      return { ..._state, error: payload };
+      return { ..._state, error: payload, loading: false };
     default:
       return _state;
   }
