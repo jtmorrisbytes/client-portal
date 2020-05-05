@@ -1,6 +1,12 @@
-.AppIcon {
+.AppIcon svg {
   max-width: 25vw;
+  max-height: 15vh;
+}
+.AppIcon {
   text-align: center;
+}
+.AppIcon p {
+  margin-bottom: 0;
 }
 @media screen and (orientation: landscape) {
   .AppIcon svg {

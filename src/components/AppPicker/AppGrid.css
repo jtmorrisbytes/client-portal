@@ -1,24 +1,32 @@
 .AppGrid {
   display: grid;
-  grid-gap: 5vmin;
+  gap: 5vmin;
   /* grid-auto-columns: calc(100vmin / 1em); */
   grid-auto-flow: column;
-  align-self: center;
+  width: 100%;
+  height: 100vh;
+  /* justify-items: center;*/
+  align-items: center;
+
+  align-content: center;
 }
 @media screen and (orientation: landscape) {
   :root {
     --icon-height: 20vh;
   }
   .AppGrid {
+    align-content: center;
     grid-auto-columns: 15vw;
     grid-template-rows: repeat(3, 28vh);
   }
 }
 @media screen and (orientation: portrait) {
   .AppGrid {
+    justify-content: center;
     grid-auto-flow: row;
-    column-gap: 10vw;
-    grid-template-columns: repeat(4, 20vmin);
+    column-gap: 5vw;
+    grid-template-columns: repeat(3, 25vw);
+    grid-template-rows: repeat(4, 20vh);
     /* grid-auto-rows: ; */
   }
 }
