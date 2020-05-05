@@ -43,18 +43,25 @@ interface Props extends RouteComponentProps<any> {
 }
 
 class App extends React.Component<Props, State> {
+  onHashChange: any;
+  constructor(props) {
+    super(props);
+    this.checkUserState = this.checkUserState.bind(this);
+    this.onHashChange = null;
+  }
   componentDidMount() {
     this.props.getSessionStatus();
-    this.props
-      .getLoggedInUser()
-      .then((data) => {
-        console.log("user", data);
-      })
-      .catch((err) => {
-        console.log("err", err);
-      });
+    this.checkUserState();
+    window.addEventListener("hashchange", this.checkUserState);
   }
-  componentDidUpdate() {}
+  compnentWillUnmount() {
+    window.removeEventListener("hashchange", this.checkUserState);
+  }
+  componentDidUpdate(prevProps: Props) {
+    if (this.props.location.hash != prevProps.location.hash) {
+      this.checkUserState();
+    }
+  }
 
   render() {
     // console.log("this.props.session", this.props.auth);
@@ -67,6 +74,38 @@ class App extends React.Component<Props, State> {
         </div>
       </div>
     );
+  }
+  checkUserState() {
+    this.props
+      .getLoggedInUser()
+      .then((action) => {
+        if (action.payload) {
+          console.log("Promise resolved, user logged in");
+        }
+      })
+      .catch((errAction) => {
+        // the line below indicates that the structs are out of sync
+        if (
+          errAction.payload.TYPE === Auth.ELoginRequired.TYPE ||
+          "LOGIN_REQUIRED"
+        ) {
+          console.log("Promise rejected, user not logged in");
+          return this.props.startAuthSession();
+        } else {
+          console.error(
+            "ComponentDidMount checkLoggedInUser unhandled rejection",
+            errAction
+          );
+          return Promise.reject();
+        }
+      })
+      .then((AuthAction) => {
+        if (AuthAction) {
+          console.log("promise chain returned authAction");
+          this.props.history.replace("/login");
+        }
+        console.log(AuthAction);
+      });
   }
 }
 
@@ -88,7 +127,7 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(checkSessionStatus());
     },
     startAuthSession: () => {
-      dispatch(startAuthSession());
+      return dispatch(startAuthSession());
     },
     requestRedirect: (redirectType, path, params) => {
       dispatch(requestRedirect(redirectType, path, params));

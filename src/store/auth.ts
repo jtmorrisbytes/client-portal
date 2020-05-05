@@ -8,14 +8,14 @@ import {
   START_LOGIN_FLOW_REJECTED,
   authApiUrl,
 } from "./constants";
-import Resopnse from "@jtmorrisbytes/lib/Response";
+import Response from "@jtmorrisbytes/lib/Response";
 import Axios from "axios";
 import {} from "@jtmorrisbytes/lib/Auth";
 
 function rejectAuthSessionAction(error) {
   return {
     type: START_AUTH_SESSION_REJECTED,
-    payload: { error },
+    payload: error,
   };
 }
 function resolveAuthSessionAction(payload) {
@@ -32,13 +32,28 @@ export function startAuthSession() {
       type: START_AUTH_SESSION_PENDING,
       payload: {},
     });
-    Axios.post(authApiUrl).then((response) => {
-      if (typeof response.data === "object") {
-        dispatch(resolveAuthSessionAction(response.data));
-      } else {
-        dispatch(rejectAuthSessionAction(Resopnse.EMissing));
-      }
-    });
+    return Axios.post(authApiUrl)
+      .then((response) => {
+        if (typeof response.data === "object") {
+          return Promise.resolve(
+            dispatch(resolveAuthSessionAction(response.data))
+          );
+        } else {
+          return Promise.reject(
+            dispatch(rejectAuthSessionAction(Response.EMissing))
+          );
+        }
+      })
+      .catch((err) => {
+        if (err.response?.data) {
+          return Promise.reject(
+            dispatch(rejectAuthSessionAction(err.response.data))
+          );
+        } else
+          return Promise.reject(
+            dispatch(rejectAuthSessionAction(Response.EGeneralFailure))
+          );
+      });
   };
 }
 function resolveStartLoginFlowAction(data) {}

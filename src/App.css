@@ -2,3 +2,13 @@
   height: 100vh;
   width: 100vw;
 }
+#app-load {
+  display: none;
+}
+#app-load[data-show="true"] {
+  width: 100vh;
+  height: 100vw;
+  display: block;
+  position: absolute;
+  content: "Loading...";
+}
