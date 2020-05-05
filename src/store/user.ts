@@ -31,9 +31,11 @@ function getLoggedInUserPending() {
 export function getLoggedInUser() {
   return (dispatch) => {
     dispatch(getLoggedInUserPending());
-    Axios.get(userApiUrl, { withCredentials: true })
+    return Axios.get(userApiUrl, { withCredentials: true })
       .then((res) => {
-        dispatch(getLoggedInUserResolved(res.data as TUser));
+        return Promise.resolve(
+          dispatch(getLoggedInUserResolved(res.data as TUser))
+        );
       })
       .catch((err: AxiosError) => {
         console.warn(
@@ -41,50 +43,27 @@ export function getLoggedInUser() {
           err
         );
         console.dir(err);
-        console.log("GET_LOGGED_IN_USER: headers", err.response?.headers);
-        console.log("GET_LOGGED_IN_USER: headers", err.response?.headers);
-        if (err.response?.data?.TYPE) {
-          console.info("GET_LOGGED_IN_USER: SWITCH TYPE");
-          switch (err.response.data.TYPE) {
-            case Auth.ELoginRequired.TYPE:
-            case "LOGIN_REQUIRED":
-              console.info("GET_LOGGED_IN_USER: LOGIN REQUIRED");
-              dispatch(getLoggedInUserRejected(Auth.ELoginRequired));
-              break;
-            case Errors.EReferenceError.TYPE:
-              dispatch(getLoggedInUserRejected(Errors.EReferenceError));
-              break;
-            case Errors.ESyntaxError.TYPE:
-              dispatch(getLoggedInUserRejected(Errors.ESyntaxError));
-              break;
-            case Errors.ETypeError.TYPE:
-              dispatch(getLoggedInUserRejected(Errors.ETypeError));
-              break;
-            case Errors.EUnknownError:
-              dispatch(getLoggedInUserRejected(Errors.EUnknownError));
-            default:
-              dispatch(getLoggedInUserRejected(Response.EGeneralFailure));
-          }
+        let errRes: any = Response.EGeneralFailure;
+        if (err.response?.data) {
+          errRes = err.response.data;
         } else if (err.response?.status) {
           switch (err.response.status) {
             case Response.ENotFound.CODE:
               console.log("you need to update your user api url");
-              dispatch(getLoggedInUserRejected(Response.ENotFound));
+              errRes = Response.ENotFound;
               break;
             case Response.EBadRequest.CODE:
-              dispatch(getLoggedInUserRejected(Response.EBadRequest));
+              errRes = Response.EBadRequest;
               break;
             case Auth.ELoginRequired.CODE:
-              dispatch(getLoggedInUserRejected(Auth.ELoginRequired));
+              errRes = Auth.ELoginRequired;
             default:
-              dispatch(getLoggedInUserRejected(Response.EGeneralFailure));
+              errRes = Response.EGeneralFailure;
           }
-        } else {
-          dispatch(Response.EGeneralFailure);
         }
-        // return new Promise(() => {
-        //   Promise.resolve();
-        // });
+        errRes = getLoggedInUserRejected(errRes);
+
+        return Promise.reject(dispatch(errRes));
       });
   };
 }
@@ -96,12 +75,14 @@ export type TUser = {
   city: string;
   state: string;
   zip: string;
+  loading: boolean;
 };
 export const User: TUser = {
   id: null,
   email: "",
   firstName: "",
   lastName: "",
+  loading: false,
   city: "",
   state: "",
   zip: "",
@@ -109,7 +90,6 @@ export const User: TUser = {
 
 const IState = {
   ...User,
-  loading: false,
   error: null,
   authorized: false,
   id: null,
