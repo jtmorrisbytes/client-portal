@@ -11,7 +11,7 @@ export default function AppIcon(props: Props) {
   return (
     <div className="AppIcon">
       <FontAwesomeIcon icon="address-book" />
-      {props.text}
+      <p>{props.text}</p>
     </div>
   );
 }

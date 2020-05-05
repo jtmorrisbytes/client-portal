@@ -1,6 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
 
+import "./AppGrid.css";
+
 interface Props {}
 interface State {}
 export class AppPicker extends React.Component<Props, State> {
@@ -9,4 +11,4 @@ export class AppPicker extends React.Component<Props, State> {
   }
 }
 
-export default connect({}, {})(AppPicker);
+export default connect(() => {}, {})(AppPicker);
