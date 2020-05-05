@@ -23,6 +23,9 @@ export const REDIRECT_ = "REDIRECT_";
 export const REDIRECT_LOGIN = REDIRECT_ + "LOGIN";
 export const REDIRECT_REGISTER = REDIRECT_ + "REGISTER";
 
+export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
+export const REGISTER_SUCCESS = "REGISTER_SUCCESS";
+
 export const ContentType = { json: "application/json" };
 // api routes
 export const sessionApiUrl = "/api/auth/session";

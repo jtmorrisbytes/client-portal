@@ -40,6 +40,12 @@
     "url": "https://github.com/jtmorrisbytes/react-express/issues"
   },
   "dependencies": {
+    "'": "fortawesome/react-fontawesome",
+    "@fortawesome/fontawesome-svg-core": "^1.2.28",
+    "@fortawesome/free-brands-svg-icons": "^5.13.0",
+    "@fortawesome/free-regular-svg-icons": "^5.13.0",
+    "@fortawesome/free-solid-svg-icons": "^5.13.0",
+    "@fortawesome/react-fontawesome": "^0.1.9",
     "@jtmorrisbytes/lib": "^0.0.37",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",

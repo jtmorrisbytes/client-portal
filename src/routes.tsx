@@ -3,12 +3,11 @@ import { Switch, Route } from "react-router-dom";
 import { LOGIN_URL, REGISTER_URL, PASSWORD_RESET } from "./store/routes";
 import Login from "./components/Login/Login";
 import Register from "./components/Register/Register";
+import { AppPicker } from "./components/AppPicker/AppPicker";
 export default function Routes(props) {
   return (
     <Switch>
-      <Route exact path="/">
-        hello from main menu
-      </Route>
+      <Route exact path="/" component={AppPicker} />
       <Route path={REGISTER_URL} component={Register} />
       <Route path={LOGIN_URL} component={Login} />
       <Route path={PASSWORD_RESET}></Route>

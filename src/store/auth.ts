@@ -6,11 +6,20 @@ import {
   START_LOGIN_FLOW_FULFILLED,
   START_LOGIN_FLOW_PENDING,
   START_LOGIN_FLOW_REJECTED,
+  REGISTER_SUCCESS,
+  LOGIN_SUCCESS,
   authApiUrl,
 } from "./constants";
 import Response from "@jtmorrisbytes/lib/Response";
 import Axios from "axios";
 import {} from "@jtmorrisbytes/lib/Auth";
+
+export function loginSuccessAction() {
+  return { type: LOGIN_SUCCESS, payload: {} };
+}
+export function RegisterSuccessAction() {
+  return { type: REGISTER_SUCCESS, payload: {} };
+}
 
 function rejectAuthSessionAction(error) {
   return {
@@ -110,6 +119,9 @@ export function authStateReducer(
     case START_AUTH_SESSION_REJECTED:
       console.log("authStateReducer got an error", payload);
       return { ...initialState, error: payload };
+    case REGISTER_SUCCESS:
+    case LOGIN_SUCCESS:
+      return { ...state, state: "" };
     default:
       return state;
   }

@@ -115,20 +115,24 @@ class Register extends React.Component<Props, State> {
         state,
         zip
       );
-      Axios.post(registerApiUrl + "?test=true", {
-        state: this.getAuthState(),
-        user: {
-          firstName: firstName.value,
-          lastName: lastName.value,
-          email: email.value,
-          password: password.value,
-          phoneNumber: phone,
-          streetAddress,
-          city,
-          state,
-          zip,
+      Axios.post(
+        registerApiUrl + "?test=true",
+        {
+          state: this.getAuthState(),
+          user: {
+            firstName: firstName.value,
+            lastName: lastName.value,
+            email: email.value,
+            password: password.value,
+            phoneNumber: phone,
+            streetAddress,
+            city,
+            state,
+            zip,
+          },
         },
-      })
+        { withCredentials: true }
+      )
         .then((res) => {
           if (res.status === 200) {
             // dispatch the session
@@ -145,8 +149,10 @@ class Register extends React.Component<Props, State> {
                   break;
                 case PASSWORD.ENotValid.TYPE:
                   error = PASSWORD.ENotValid;
+                  break;
                 case Nist.ENist.TYPE:
                   error = Nist.ENist;
+                  break;
                 default:
                   error = Response.EBadRequest;
                   break;

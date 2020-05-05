@@ -43,11 +43,10 @@ interface Props extends RouteComponentProps<any> {
 }
 
 class App extends React.Component<Props, State> {
-  onHashChange: any;
+  routeWhitelist = ["/register", "/login"];
   constructor(props) {
     super(props);
     this.checkUserState = this.checkUserState.bind(this);
-    this.onHashChange = null;
   }
   componentDidMount() {
     this.props.getSessionStatus();
@@ -69,7 +68,11 @@ class App extends React.Component<Props, State> {
       <div className="App">
         <div
           id="app-load"
-          data-show={this.props.sessionLoading || this.props.user.loading}>
+          data-show={
+            this.props.sessionLoading ||
+            this.props.user.loading ||
+            this.props.auth.loading
+          }>
           LOADING...
         </div>
         <Routes />
@@ -90,8 +93,34 @@ class App extends React.Component<Props, State> {
           errAction.payload.TYPE === Auth.ELoginRequired.TYPE ||
           "LOGIN_REQUIRED"
         ) {
-          console.log("Promise rejected, user not logged in");
-          return this.props.startAuthSession();
+          if (this.props.auth.state.length === 0) {
+            console.log(
+              "Promise rejected, user not logged in, starting auth session"
+            );
+            return this.props.startAuthSession().then((AuthAction) => {
+              console.log("Checking whitelist before redirecting");
+
+              if (AuthAction) {
+                console.log("promise chain returned authAction");
+                this.props.history.replace("/login");
+              }
+              console.log(AuthAction);
+            });
+          } else if (this.props.auth.state.length > 0) {
+            console.log("login or signup in progress, checking whitelist");
+            if (
+              this.routeWhitelist.includes(this.props.history.location.pathname)
+            ) {
+              console.log("login in progress route was in whitelist");
+            } else {
+              console.log(
+                this.props.history.location.pathname,
+                "was not in ",
+                this.routeWhitelist
+              );
+              this.props.history.goBack();
+            }
+          }
         } else {
           console.error(
             "ComponentDidMount checkLoggedInUser unhandled rejection",
@@ -99,13 +128,6 @@ class App extends React.Component<Props, State> {
           );
           return Promise.reject();
         }
-      })
-      .then((AuthAction) => {
-        if (AuthAction) {
-          console.log("promise chain returned authAction");
-          this.props.history.replace("/login");
-        }
-        console.log(AuthAction);
       });
   }
 }

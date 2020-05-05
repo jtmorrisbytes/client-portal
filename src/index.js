@@ -6,6 +6,11 @@ import { Provider } from "react-redux";
 import { store } from "./store";
 import { HashRouter } from "react-router-dom";
 
+import { library } from "@fortawesome/fontawesome-svg-core";
+// import { far } from "@fortawesome/free-regular-svg-icons";
+import { faAddressBook } from "@fortawesome/free-solid-svg-icons";
+library.add(faAddressBook);
+
 ReactDOM.render(
   <HashRouter>
     <Provider store={store}>
