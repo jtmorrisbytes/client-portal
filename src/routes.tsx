@@ -4,6 +4,11 @@ import { LOGIN_URL, REGISTER_URL, PASSWORD_RESET } from "./store/routes";
 import Login from "./components/Login/Login";
 import Register from "./components/Register/Register";
 import { AppPicker } from "./components/AppPicker/AppPicker";
+
+import ContactsApp from "./components/ContactsApp/ContactsApp";
+import HeadNav from "./components/HeadNav/HeadNav";
+import FootNav from "./components/FootNav/FootNav";
+
 export default function Routes(props) {
   return (
     <Switch>
@@ -15,11 +20,11 @@ export default function Routes(props) {
       <Route path="/401">not authorized</Route>
       <Route path="/500">internal server error</Route>
       <Route path="*">
-        {/* this will be the navbar */}
-        {/* <Switch>
-          this is the PASSWORD_RESET component this is a default route
-        </Switch> */}
-        {/* this will be the footer nav */}
+        <HeadNav />
+        <Switch>
+          <Route path="/contacts" component={ContactsApp} />
+        </Switch>
+        <FootNav />
       </Route>
     </Switch>
   );

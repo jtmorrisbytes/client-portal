@@ -1,4 +1,4 @@
-import { REDIRECT_LOGIN, REDIRECT_REGISTER } from "./constants";
+import { REDIRECT_LOGIN, REDIRECT_REGISTER, UPDATE_TITLE } from "./constants";
 
 export const LOGIN_URL = "/login";
 export const REGISTER_URL = "/register";
@@ -37,6 +37,13 @@ export function notifyRedirectInterstitial() {
     payload: {},
   };
 }
+export function updateTitleAction(title: string) {
+  return {
+    type: UPDATE_TITLE,
+    payload: title,
+  };
+}
+
 export function endRouteTransition(type = "") {
   return {
     type: END_ROUTE_TRANSITION,
@@ -48,6 +55,7 @@ export type TRouter = {
   redirectInProgress: boolean;
   redirectTo: string | null;
   redirectType: string | null;
+  title: string;
 };
 const initialState: TRouter = {
   // when redirect requested is true,
@@ -67,6 +75,7 @@ const initialState: TRouter = {
   redirectType: null,
   redirectInProgress: false,
   redirectTo: null,
+  title: "",
 };
 
 /**
@@ -102,7 +111,9 @@ export function routeReducer(
       console.log("a redirect occurred");
       return { ...state, redirectRequested: false, redirectInProgress: true };
     case END_ROUTE_TRANSITION:
-      return { ...initialState };
+      return { ...initialState, title: state.title };
+    case UPDATE_TITLE:
+      return { ...state, title: payload };
     default:
       return state;
   }
