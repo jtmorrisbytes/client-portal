@@ -1,3 +1,4 @@
+/// <reference types="cypress" />
 const { user } = require("../../fixtures/constants");
 function fillLoginForm(fixture) {
   cy.get("@emailInput").type(fixture.email);
@@ -39,6 +40,20 @@ describe("when the user visits the app", () => {
       cy.url().should("include", "/register");
     }
   );
+  it("should alert the user if they have the incorrect password", () => {
+    // cy.contains("Email address");
+
+    cy.get("@emailInput").type("hello" + user.email);
+    cy.get("@passwordInput").type(user.password + "NOPE");
+    cy.server();
+    cy.route("POST", "**/api/auth/login").as("login");
+    cy.get("@loginButton").should("have.text", "Log In").click();
+    cy.get("@emailInput").should("be.empty");
+    cy.wait("@login").then((response) => {
+      expect(response.status).to.eq(401);
+      console.log("cypress network request settled", response);
+    });
+  });
   it("Should Successfully log in the user", () => {
     cy.fixture("user").then((user) => {
       fillLoginForm(user);

@@ -16,8 +16,9 @@ import { registerApiUrl } from "../../store/constants";
 import * as Response from "@jtmorrisbytes/lib/Response";
 import * as Auth from "@jtmorrisbytes/lib/Auth";
 import * as Nist from "@jtmorrisbytes/lib/Nist";
+import { RouteComponentProps } from "react-router-dom";
 
-interface Props {
+interface Props extends RouteComponentProps {
   requestRedirect: typeof requestRedirect;
 }
 interface State {
@@ -131,12 +132,7 @@ class Register extends React.Component<Props, State> {
         .then((res) => {
           if (res.status === 200) {
             // dispatch the session
-            this.setState({ loading: false }, () => {
-              console.log("registration success");
-              this.props.requestRedirect("REGISTER_SUCCESS", "", {});
-              // cheating for now:
-              window.location.replace("/");
-            });
+            this.props.history.replace("/");
           }
         })
         .catch((err: AxiosError) => {
