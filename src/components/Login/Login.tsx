@@ -25,7 +25,7 @@ interface Props extends RouteComponentProps {
   router: TRouter;
   auth: TAuth;
   user: TUser;
-  getLoggedInUser: typeof getLoggedInUser;
+  getLoggedInUser: () => Promise<any>;
 }
 interface State {
   email: string;
@@ -69,10 +69,12 @@ class Login extends React.Component<Props, State> {
     console.log("handleInputUpdate", name, value || "");
     this.setState({ ...this.state, [name]: value });
   }
+  redirectToHome() {
+    this.props.history.replace("/");
+  }
   componentDidUpdate() {
     if (this.props.user.id) {
       console.log("User Logged In");
-      requestRedirect("USER_LOGGED_IN", "#/", {});
     }
   }
   handleSubmit(e) {
@@ -96,7 +98,13 @@ class Login extends React.Component<Props, State> {
     )
       .then((res) => {
         console.log(res);
-        this.props.getLoggedInUser();
+        // this.props.getLoggedInUser();
+        if (res.status === 200 && res.data.id) {
+          // this.props.getLoggedInUser().then((res) => {
+          //   this.redirectToHome();
+          // });
+          this.redirectToHome();
+        }
       })
       .catch((error) => {
         try {
