@@ -1,20 +1,13 @@
 /// <reference types="cypress" />
 const { user } = require("../../fixtures/constants");
-function fillLoginForm(fixture) {
-  cy.get("@emailInput").type(fixture.email);
-  cy.get("@passwordInput").type(fixture.password);
-}
+const { fillLoginForm, getLoginInputs } = require("../../fixtures/functions");
 before(() => {
   Cypress.Cookies.debug(true);
 });
 describe("when the user visits the app", () => {
   beforeEach(() => {
     cy.visit("/");
-    cy.url().should("include", "/login");
-    cy.get("input[type='email'][name='email']").as("emailInput");
-    cy.get("input[type='password'][name='password']").as("passwordInput");
-    cy.get("button[type='submit'][name='login']").as("loginButton");
-    cy.get("a.btn[name='register']").as("register");
+    getLoginInputs();
   });
   it(
     "should alert the user if they havent registered yet" +
@@ -36,7 +29,7 @@ describe("when the user visits the app", () => {
         .get("button.close[type='button']")
         .wait(800)
         .click();
-      cy.get("@register").should("have.text", "Sign Up").click();
+      cy.get("@registerButton").should("have.text", "Sign Up").click();
       cy.url().should("include", "/register");
     }
   );
