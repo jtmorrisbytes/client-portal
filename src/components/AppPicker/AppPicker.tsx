@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-
+import { Link } from "react-router-dom";
 import "./AppPicker.css";
 
 import AppGrid from "./AppGrid";
@@ -13,10 +13,19 @@ export class AppPicker extends React.Component<Props, State> {
     return (
       <main className="AppPicker">
         <AppGrid>
-          <AppIcon text="Address Book" />
-          <AppIcon text="Settings" />
-          <AppIcon text="Appointments" />
-          <AppIcon text="Payments" />
+          <Link to="/contacts">
+            <AppIcon name="contacts" icon="address-book" text="Contacts" />
+          </Link>
+          {/* the below are to remain disabled until completed */}
+          {/* <Link to="/settings">
+            <AppIcon name="settings" icon="cog" text="Settings" />
+          </Link>
+          <Link to="/calendar">
+            <AppIcon name="calendar" icon="calendar" text="Appointments" />
+          </Link>
+          <Link to="/payments">
+            <AppIcon name="payments" icon="credit-card" text="Payments" />
+          </Link> */}
         </AppGrid>
       </main>
     );
