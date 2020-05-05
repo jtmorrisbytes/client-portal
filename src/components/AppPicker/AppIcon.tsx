@@ -1,17 +1,21 @@
 import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  FontAwesomeIcon,
+  FontAwesomeIconProps,
+} from "@fortawesome/react-fontawesome";
 
 import "./AppIcon.css";
 
-type Props = {
+interface Props extends FontAwesomeIconProps {
   text: string;
-};
+}
 
 export default function AppIcon(props: Props) {
+  const { text } = props;
   return (
     <div className="AppIcon">
-      <FontAwesomeIcon icon="address-book" />
-      <p>{props.text}</p>
+      <FontAwesomeIcon {...props} />
+      <p>{text}</p>
     </div>
   );
 }
