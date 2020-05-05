@@ -2,6 +2,13 @@ function fillLoginForm(fixture) {
   cy.get("@emailInput").type(fixture.email);
   cy.get("@passwordInput").type(fixture.password);
 }
+function setupApiRoutes() {
+  cy.server();
+  cy.route("POST", "/api/auth").as("startAuthSession");
+  cy.route("GET", "/api/auth/session").as("getSession");
+  cy.route("GET", "/api/user").as("getUser");
+  cy.route("POST", "/api/auth/login").as("login");
+}
 function getLoginInputs() {
   cy.get("input[type='email'][name='email']").as("emailInput");
   cy.get("input[type='password'][name='password']").as("passwordInput");
@@ -10,11 +17,7 @@ function getLoginInputs() {
 }
 
 function login(fixture) {
-  cy.server();
-  cy.route("POST", "/api/auth").as("startAuthSession");
-  cy.route("GET", "/api/auth/session").as("getSession");
-  cy.route("GET", "/api/user").as("getUser");
-  cy.route("POST", "/api/auth/login").as("login");
+  setupApiRoutes();
   cy.visit("/");
   cy.wait("@getSession");
   cy.wait("@getUser");
@@ -35,5 +38,6 @@ function login(fixture) {
 module.exports = {
   fillLoginForm,
   login,
+  setupApiRoutes,
   getLoginInputs,
 };
