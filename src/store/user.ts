@@ -1,12 +1,20 @@
 import Axios, { AxiosError } from "axios";
-import { _PENDING, _FULFILLED, _REJECTED, userApiUrl } from "./constants";
+import {
+  _PENDING,
+  _FULFILLED,
+  _REJECTED,
+  userApiUrl,
+  GET_LOGGED_IN_USER_FULFILLED,
+  GET_LOGGED_IN_USER_PENDING,
+  GET_LOGGED_IN_USER_REJECTED,
+  GET_USER_CLIENTS_PENDING,
+  GET_USER_CLIENTS_FULFILLED,
+  GET_USER_CLIENTS_REJECTED,
+} from "./constants";
 import Response from "@jtmorrisbytes/lib/Response";
 import Auth from "@jtmorrisbytes/lib/Auth";
 import Errors from "@jtmorrisbytes/lib/Error";
-const GET_LOGGED_IN_USER = "GET_LOGGED_IN_USER";
-const GET_LOGGED_IN_USER_PENDING = GET_LOGGED_IN_USER + _PENDING;
-const GET_LOGGED_IN_USER_FULFILLED = GET_LOGGED_IN_USER + _FULFILLED;
-const GET_LOGGED_IN_USER_REJECTED = GET_LOGGED_IN_USER + _REJECTED;
+
 const NOT_AUTHORIZED = "NOT_AUTHORIZED";
 
 function getLoggedInUserRejected(payload?: object) {
@@ -25,6 +33,28 @@ function getLoggedInUserPending() {
   return {
     type: GET_LOGGED_IN_USER_PENDING,
     payload: {},
+  };
+}
+function getUserClientsPending() {
+  return {
+    type: GET_USER_CLIENTS_PENDING,
+    payload: {},
+  };
+}
+function getUserClientsFulfilled(payload: object) {
+  return {
+    type: GET_USER_CLIENTS_FULFILLED,
+    payload,
+  };
+}
+export function getUserClients() {
+  return (dispatch) => {
+    dispatch(getUserClientsPending());
+    return Axios.get("/api/user/clients", {
+      withCredentials: true,
+    }).then((res) => {
+      return Promise.resolve(dispatch(getUserClientsFulfilled(res.data)));
+    });
   };
 }
 
@@ -75,6 +105,7 @@ export type TUser = {
   city: string;
   state: string;
   zip: string;
+  clients: TUser[];
   loading: boolean;
 };
 export const User: TUser = {
@@ -85,6 +116,7 @@ export const User: TUser = {
   loading: false,
   city: "",
   state: "",
+  clients: [],
   zip: "",
 };
 
@@ -99,9 +131,13 @@ export function userReducer(_state = IState, action: any) {
   let { type, payload } = action;
   let state = _state;
   switch (type) {
+    case GET_USER_CLIENTS_PENDING:
+      return { ..._state, loading: true };
     case GET_LOGGED_IN_USER_PENDING:
       console.log("GET_LOGGED_IN_USER_PENDING");
       return { ..._state, loading: true };
+    case GET_USER_CLIENTS_FULFILLED:
+      return { ..._state, loading: false, clients: payload };
     case GET_LOGGED_IN_USER_FULFILLED:
       payload = payload as TUser;
       const { id, firstName, lastName, email, city, state, zip } = payload;

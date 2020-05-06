@@ -36,6 +36,7 @@ function login(fixture) {
   cy.wait("@login");
   // wait until the app redirects
   cy.hash().should("eq", "#/");
+  cy.wait("@getUser");
 }
 module.exports = {
   fillLoginForm,

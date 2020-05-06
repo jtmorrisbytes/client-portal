@@ -14,7 +14,12 @@ export class AppPicker extends React.Component<Props, State> {
       <main className="AppPicker">
         <AppGrid>
           <Link to="/contacts">
-            <AppIcon name="contacts" icon="address-book" text="Contacts" />
+            <AppIcon
+              id="contacts"
+              name="contacts"
+              icon="address-book"
+              text="Contacts"
+            />
           </Link>
           {/* the below are to remain disabled until completed */}
           {/* <Link to="/settings">

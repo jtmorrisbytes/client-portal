@@ -24,7 +24,15 @@ export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
 export const REGISTER_SUCCESS = "REGISTER_SUCCESS";
 
 export const UPDATE_TITLE = "UPDATE_TITLE";
-
+// user constants
+export const GET_LOGGED_IN_USER = "GET_LOGGED_IN_USER";
+export const GET_LOGGED_IN_USER_PENDING = GET_LOGGED_IN_USER + _PENDING;
+export const GET_LOGGED_IN_USER_FULFILLED = GET_LOGGED_IN_USER + _FULFILLED;
+export const GET_LOGGED_IN_USER_REJECTED = GET_LOGGED_IN_USER + _REJECTED;
+export const GET_USER_CLIENTS = "GET_USER_CLIENTS";
+export const GET_USER_CLIENTS_REJECTED = GET_USER_CLIENTS + _REJECTED;
+export const GET_USER_CLIENTS_PENDING = GET_USER_CLIENTS + _PENDING;
+export const GET_USER_CLIENTS_FULFILLED = GET_USER_CLIENTS + _FULFILLED;
 export const ContentType = { json: "application/json" };
 // api routes
 export const sessionApiUrl = "/api/auth/session";

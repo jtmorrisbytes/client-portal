@@ -11,9 +11,9 @@ interface Props extends FontAwesomeIconProps {
 }
 
 export default function AppIcon(props: Props) {
-  const { text } = props;
+  const { text, id, name } = props;
   return (
-    <div className="AppIcon">
+    <div id={id} className="AppIcon">
       <FontAwesomeIcon {...props} />
       <p>{text}</p>
     </div>

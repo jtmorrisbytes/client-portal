@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { TRouter } from "../../store/routes";
 import { RouteComponentProps, Route, withRouter } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./HeadNav.css";
 
 interface ReduxState {
