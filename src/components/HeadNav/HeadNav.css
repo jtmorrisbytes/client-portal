@@ -1,0 +1,21 @@
+nav#HeadNav {
+  height: 5vh;
+  max-height: 200px;
+  display: flex;
+  flex-direction: row;
+  font-size: 150%;
+  align-content: center;
+  justify-content: center;
+  background-color: #fafafa;
+  border-bottom: 1px solid #ccc;
+}
+#HeadNav .backControl {
+  display: inline-block;
+  position: absolute;
+  left: 1vw;
+}
+#HeadNav .label {
+  /* width: auto; */
+}
+#HeadNav .title {
+}

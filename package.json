@@ -4,10 +4,11 @@
   "description": "",
   "scripts": {
     "test": "set NODE_ENV=development&& npx concurrently --kill-others \\\"npm run start\\\" \\\"npm run cypress\\\"",
-    "client:build": "react-scripts build",
-    "client:start": "react-scripts start",
+    "client:build": "npx react-scripts build",
+    "client:start": "npx react-scripts start",
     "cypress": "npx cypress open",
     "start": "npx react-scripts start",
+    "prod:watch": "nodemon -e js,jsx,ts,tsx,css --watch .\\src\\** --exec \"yarn run client:build && upload\"",
     "flow": "flow"
   },
   "eslintConfig": {

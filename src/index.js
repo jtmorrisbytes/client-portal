@@ -8,8 +8,11 @@ import { HashRouter } from "react-router-dom";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 // import { far } from "@fortawesome/free-regular-svg-icons";
-import { faAddressBook } from "@fortawesome/free-solid-svg-icons";
-library.add(faAddressBook);
+import {
+  faAddressBook,
+  faChevronLeft,
+} from "@fortawesome/free-solid-svg-icons";
+library.add(faAddressBook, faChevronLeft);
 
 ReactDOM.render(
   <HashRouter>

@@ -17,6 +17,8 @@ function getLoginInputs() {
 }
 
 function login(fixture) {
+  cy.server();
+  Cypress.Cookies.preserveOnce("connect.sid");
   setupApiRoutes();
   cy.visit("/");
   cy.wait("@getSession");

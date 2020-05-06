@@ -1,11 +1,13 @@
+/// <reference types="cypress" />
 const { login, setupApiRoutes } = require("../../fixtures/functions");
 
-before(() => {
-  login();
-});
 describe("Header Navigation", () => {
   beforeEach(() => {
+    cy.viewport(480, 1080);
     setupApiRoutes();
+    cy.clearCookie("connect.sid");
+    Cypress.Cookies.preserveOnce("connect.sid");
+    login();
     cy.visit("/#/contacts");
     cy.wait("@getUser");
     cy.get("nav#HeadNav").as("HeadNav").should("exist");
@@ -14,6 +16,8 @@ describe("Header Navigation", () => {
     cy.get("@HeadNav").should("exist");
   });
   it("should have a heading called title", () => {
-    cy;
+    cy.get("@HeadNav")
+      .children("#componentTitle")
+      .should("have.text", "Contacts");
   });
 });
