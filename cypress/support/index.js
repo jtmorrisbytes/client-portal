@@ -27,3 +27,4 @@ import "cypress-hmr-restarter";
 //     return _consoleInfo.apply(win.console, arguments);
 //   };
 // });
+require("cypress-react-unit-test/support");

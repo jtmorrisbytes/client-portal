@@ -1,3 +1,5 @@
 {
-  "baseUrl": "https://aspiesolutions.com"
+  "baseUrl": "https://aspiesolutions.com",
+  "experimentalComponentTesting": true,
+  "componentFolder": "src"
 }
