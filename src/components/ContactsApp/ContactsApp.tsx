@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { getUserClients, TUser, GUCFAction } from "../../store/user";
 import { Button, Container, Row, Col } from "react-bootstrap";
-import ContactCard from "./ContactCard";
+import ContactCard from "./ContactCard/ContactCard";
 interface Props {
   getUserClients: () => Promise<GUCFAction>;
   user: TUser;
@@ -42,6 +42,15 @@ class ContactsApp extends React.Component<Props, State> {
           <Row>
             <Col>
               <Button block>Add Contact</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <input
+                type="text"
+                name="search"
+                placeholder="search for contats"
+              />
             </Col>
           </Row>
           <Row>

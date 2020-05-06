@@ -1,11 +1,13 @@
 import React from "react";
 import { connect } from "react-redux";
-import { getUserClients, TUser, GUCFAction } from "../../store/user";
+import { getUserClients, TUser, GUCFAction } from "../../../store/user";
 import { Button, Container, Row, Col } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import "./ContactCard.css";
 interface Props {
   firstName: string;
   lastName: string;
+  id: string | number;
 }
 interface State {}
 class ContactCard extends React.Component<Props, State> {
@@ -14,7 +16,9 @@ class ContactCard extends React.Component<Props, State> {
   componentDidMount() {}
   render() {
     return (
-      <Row className="ContactCard x-2">
+      <Row
+        id={String(this.props.id)}
+        className="ContactCard py-1 border border-dark">
         <Col xs="auto">
           <img src="https://picsum.photos/50/50" />
         </Col>
@@ -22,14 +26,18 @@ class ContactCard extends React.Component<Props, State> {
           <div> {this.props.firstName}</div>
           <div>{this.props.lastName}</div>
         </Col>
-        <Col xs="2">
-          <FontAwesomeIcon icon="phone-alt" />
+        <Col xs="2" className="text-center">
+          <FontAwesomeIcon
+            fixedWidth
+            className="img-fluid mx-auto"
+            icon="phone-alt"
+          />
         </Col>
         <Col xs="2">
-          <FontAwesomeIcon icon="envelope" />
+          <FontAwesomeIcon className="text-center" fixedWidth icon="envelope" />
         </Col>
         <Col xs="2">
-          <FontAwesomeIcon icon="comment" />
+          <FontAwesomeIcon className="text-center" fixedWidth icon="comment" />
         </Col>
       </Row>
     );

@@ -6,7 +6,9 @@ import ContactsApp from "./ContactsApp.tsx";
 import { store } from "../../store";
 import { connect, Provider } from "react-redux";
 import "../../icons";
-import "../../../node_modules/bootstrap-css-only/css/bootstrap.min.css";
+// import "../../../node_modules/bootstrap-css-only/css/bootstrap-grid.min.css";
+// import "../../../node_modules/bootstrap-css-only/css/bootstrap.min.css";
+import "../../bootstrap.min.css";
 describe("HelloWorld component", () => {
   beforeEach(() => {
     cy.viewport(480, 720);

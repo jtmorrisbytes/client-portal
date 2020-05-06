@@ -1,0 +1,7 @@
+.ContactCard svg {
+  font-size: 2em;
+}
+.ContactCard svg.fa-envelope,
+.ContactCard svg.fa-comment {
+  font-size: 2.25em;
+}
