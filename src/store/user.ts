@@ -35,13 +35,24 @@ function getLoggedInUserPending() {
     payload: {},
   };
 }
+// GetUserClientResolved
+export type GUCFAction = {
+  type: string;
+  payload: any[];
+};
+function getUsersClientsRejected(error: object) {
+  return {
+    type: GET_LOGGED_IN_USER_PENDING,
+    payload: error,
+  };
+}
 function getUserClientsPending() {
   return {
     type: GET_USER_CLIENTS_PENDING,
     payload: {},
   };
 }
-function getUserClientsFulfilled(payload: object) {
+function getUserClientsFulfilled(payload: any[]): GUCFAction {
   return {
     type: GET_USER_CLIENTS_FULFILLED,
     payload,
@@ -52,9 +63,15 @@ export function getUserClients() {
     dispatch(getUserClientsPending());
     return Axios.get("/api/user/clients", {
       withCredentials: true,
-    }).then((res) => {
-      return Promise.resolve(dispatch(getUserClientsFulfilled(res.data)));
-    });
+    })
+      .then((res) => {
+        return Promise.resolve(
+          dispatch(getUserClientsFulfilled(res.data || []))
+        );
+      })
+      .catch((err) => {
+        return Promise.reject(getUsersClientsRejected(dispatch(err)));
+      });
   };
 }
 
