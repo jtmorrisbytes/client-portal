@@ -1,5 +1,5 @@
 nav#HeadNav {
-  height: 5vh;
+  /* height: 5vh; */
   max-height: 200px;
   display: flex;
   flex-direction: row;
@@ -13,6 +13,9 @@ nav#HeadNav {
   display: inline-block;
   position: absolute;
   left: 1vw;
+}
+#HeadNav .backControl:hover {
+  cursor: pointer;
 }
 #HeadNav .label {
   /* width: auto; */

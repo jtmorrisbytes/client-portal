@@ -19,6 +19,9 @@ class HeadNav extends React.Component<Props, State> {
   componentDidMount() {
     this.u = this.props.history.listen(this.l);
   }
+  goBack() {
+    this.props.history.goBack();
+  }
   componentWillUnmount() {
     this.u();
   }
@@ -35,11 +38,11 @@ class HeadNav extends React.Component<Props, State> {
     }
     return (
       <nav id={"HeadNav"}>
-        <span className="backControl">
+        {/* <span className="backControl" onClick={this.goBack.bind(this)}>
           <FontAwesomeIcon icon="chevron-left" />
           <span className="label">Back</span>
-        </span>
-        <span id="componentTitle">{title}</span>
+        </span> */}
+        <span id=".title">{title}</span>
       </nav>
     );
   }
