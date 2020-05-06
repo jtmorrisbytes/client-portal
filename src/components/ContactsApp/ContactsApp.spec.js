@@ -5,6 +5,8 @@ import { mount } from "cypress-react-unit-test";
 import ContactsApp from "./ContactsApp.tsx";
 import { store } from "../../store";
 import { connect, Provider } from "react-redux";
+import "../../icons";
+import "../../../node_modules/bootstrap-css-only/css/bootstrap.min.css";
 describe("HelloWorld component", () => {
   beforeEach(() => {
     cy.viewport(480, 720);

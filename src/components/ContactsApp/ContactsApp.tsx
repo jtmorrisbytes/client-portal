@@ -1,6 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
 import { getUserClients, TUser, GUCFAction } from "../../store/user";
+import { Button, Container, Row, Col } from "react-bootstrap";
+import ContactCard from "./ContactCard";
 interface Props {
   getUserClients: () => Promise<GUCFAction>;
   user: TUser;
@@ -16,11 +18,8 @@ class ContactsApp extends React.Component<Props, State> {
   };
   renderClients(action: GUCFAction): any[] {
     return action.payload.map((client) => {
-      return (
-        <div>
-          {client.firstName} {client.lastName}
-        </div>
-      );
+      console.log("renderClients", client);
+      return <ContactCard {...client} />;
     });
   }
   componentDidMount() {
@@ -39,15 +38,22 @@ class ContactsApp extends React.Component<Props, State> {
       return <div>Loading</div>;
     } else {
       return (
-        <div>
-          <div id="CurrentUser">
-            <div className="name">
-              {this.props.user.firstName || "FirstName"}{" "}
-              {this.props.user.lastName || "LastName"}
+        <Container>
+          <Row>
+            <Col>
+              <Button block>Add Contact</Button>
+            </Col>
+          </Row>
+          <Row>
+            <div id="CurrentUser">
+              <div className="name">
+                {this.props.user.firstName || "FirstName"}{" "}
+                {this.props.user.lastName || "LastName"}
+              </div>
             </div>
-          </div>
+          </Row>
           {this.state.mappedClients}
-        </div>
+        </Container>
       );
     }
   }
