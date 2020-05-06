@@ -1,5 +1,6 @@
 {
   "baseUrl": "https://aspiesolutions.com",
   "experimentalComponentTesting": true,
-  "componentFolder": "src"
+  "componentFolder": "src/components",
+  "testFiles": ["**/*.spec.jsx", "**/*.spec.js", "**/*.spec.ts"]
 }
