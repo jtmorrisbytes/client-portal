@@ -34,7 +34,7 @@ class ContactCard extends React.Component<Props, State> {
         <Col xs="auto">
           <img src="https://picsum.photos/50/50" />
         </Col>
-        <Col xs="3" data-test-id={`name-${this.props.id}`}>
+        <Col xs="3" sm="4" lg="7" xl="8" data-test-id={`name-${this.props.id}`}>
           <div> {this.props.firstName}</div>
           <div>{this.props.lastName}</div>
         </Col>
