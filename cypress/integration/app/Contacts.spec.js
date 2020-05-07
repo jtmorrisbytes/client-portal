@@ -1,4 +1,5 @@
 const { login } = require("../../fixtures/functions");
+const constants = require("../../../src/store/constants");
 describe("Contacts App", () => {
   afterEach(() => {
     cy.clearCookies();
@@ -8,11 +9,9 @@ describe("Contacts App", () => {
     cy.route({ url: "/api/user/clients", response: "fixture:users.json" }).as(
       "getClients"
     );
-    login();
+    cy.request("POST", constants.authApiUrl, (xhr1) => {});
     cy.visit("/#/contacts");
     cy.wait(["@getClients", "@getUser"]);
   });
-  it("should work", () => {
-    cy.racee;
-  });
+  it("should work", () => {});
 });

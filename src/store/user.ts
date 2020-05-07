@@ -122,6 +122,7 @@ export type TUser = {
   city: string;
   state: string;
   zip: string;
+  phoneNumber: string;
   clients: TUser[];
   loading: boolean;
 };
@@ -133,6 +134,7 @@ export const User: TUser = {
   loading: false,
   city: "",
   state: "",
+  phoneNumber: "",
   clients: [],
   zip: "",
 };
@@ -157,7 +159,16 @@ export function userReducer(_state = IState, action: any) {
       return { ..._state, loading: false, clients: payload };
     case GET_LOGGED_IN_USER_FULFILLED:
       payload = payload as TUser;
-      const { id, firstName, lastName, email, city, state, zip } = payload;
+      const {
+        id,
+        firstName,
+        lastName,
+        email,
+        city,
+        state,
+        zip,
+        phoneNumber,
+      } = payload;
       return {
         ..._state,
         id,
@@ -167,6 +178,7 @@ export function userReducer(_state = IState, action: any) {
         city,
         state,
         zip,
+        phoneNumber,
         loading: false,
       };
     case GET_LOGGED_IN_USER_REJECTED:
