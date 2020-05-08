@@ -1,0 +1,10 @@
+#ContactAddEdit input,
+#ContactAddEdit label {
+  --font-size: 1rem;
+  --line-height: calc(var(--font-size) * 1.25);
+  --height: calc(var(--line-height) * 1.1);
+  width: 100%;
+  font-size: var(--font-size);
+  height: var(--height);
+  line-height: var(--line-height);
+}

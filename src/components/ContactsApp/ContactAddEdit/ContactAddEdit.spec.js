@@ -24,8 +24,11 @@ describe("Component ContactAddEdit", () => {
     );
   });
   it("should work", () => {
-    cy.viewport(360, 480).wait(1500);
-    cy.viewport(575, 720).wait(1500);
-    cy.viewport(720, 1080).wait(1500);
+    let endWidth = 720;
+    let delayMs = 2;
+    let startWidth = 360;
+    for (let width = startWidth; width < endWidth; width++) {
+      cy.viewport(width, (width * 16) / 9);
+    }
   });
 });
