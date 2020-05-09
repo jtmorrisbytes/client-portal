@@ -1,10 +1,82 @@
-#ContactAddEdit input,
-#ContactAddEdit label {
+#ContactAddEdit {
   --font-size: 1rem;
-  --line-height: calc(var(--font-size) * 1.25);
-  --height: calc(var(--line-height) * 1.1);
+  --row-spacing: calc(var(--font-size) / 4);
+  --row-height: calc(var(--font-size) * 2);
+  --content-row-spacing: calc(var(--font-size) * 1.5);
+  overflow: auto;
+}
+#ContactAddEdit input#fName {
+  grid-area: fn;
+}
+#ContactAddEdit input {
   width: 100%;
-  font-size: var(--font-size);
-  height: var(--height);
-  line-height: var(--line-height);
+}
+#ContactAddEdit input#mName {
+  grid-area: mn;
+}
+#ContactAddEdit input#lName {
+  grid-area: ln;
+}
+#ContactAddEdit img {
+  grid-area: im;
+  align-self: center;
+  justify-self: center;
+}
+#ContactAddEdit #img-names {
+  display: grid;
+  column-gap: 1rem;
+  row-gap: var(--row-spacing);
+  grid-template-columns: auto, 1fr;
+  grid-template-rows: repeat(3, var(--row-height));
+  /* grid-template-rows: 1fr 1fr; */
+  grid-template-areas:
+    "im fn"
+    "im mn"
+    "im ln";
+}
+#ContactAddEdit > * {
+  margin-bottom: calc(var(--row-spacing) * 4);
+}
+#ContactAddEdit #email-phone > input {
+  margin-bottom: var(--row-spacing);
+}
+#ContactAddEdit > #address > h1,
+#ContactAddEdit > #address > h2,
+#ContactAddEdit > #address > h3,
+#ContactAddEdit > #address > h4,
+#ContactAddEdit > #address > h5,
+#ContactAddEdit > #address > h6 {
+  text-align: center;
+}
+#ContactAddEdit > #address > .inputs {
+  display: grid;
+  column-gap: 1rem;
+  grid-template-rows: repeat(3, var(--row-height));
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    "str str"
+    "cit cit"
+    "sta zip";
+  row-gap: var(--row-spacing);
+}
+#str {
+  grid-area: str;
+}
+#cit {
+  grid-area: cit;
+}
+#sta {
+  grid-area: sta;
+}
+#zip {
+  grid-area: zip;
+}
+#ContactAddEdit button[type="submit"] {
+  position: absolute;
+  bottom: 0;
+  left: 4%;
+  right: 4%;
+  width: 92%;
+  margin: 0;
+  bottom: 15px;
 }

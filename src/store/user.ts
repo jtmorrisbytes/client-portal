@@ -116,9 +116,10 @@ export function getLoggedInUser() {
 }
 export type TUser = {
   id: number | null;
-  email?: string;
-  firstName?: string;
-  lastName?: string;
+  streetAddress: string;
+  email: string;
+  firstName: string;
+  lastName: string;
   city: string;
   state: string;
   zip: string;
@@ -134,6 +135,7 @@ export const User: TUser = {
   loading: false,
   city: "",
   state: "",
+  streetAddress: "",
   phoneNumber: "",
   clients: [],
   zip: "",
@@ -164,6 +166,7 @@ export function userReducer(_state = IState, action: any) {
         firstName,
         lastName,
         email,
+        streetAddress,
         city,
         state,
         zip,
@@ -171,14 +174,15 @@ export function userReducer(_state = IState, action: any) {
       } = payload;
       return {
         ..._state,
-        id,
-        firstName,
-        lastName,
-        email,
-        city,
-        state,
-        zip,
-        phoneNumber,
+        id: id || null,
+        firstName: firstName || "",
+        lastName: lastName || "",
+        email: email || "",
+        streetAddress: streetAddress || "",
+        city: city || "",
+        state: state || "",
+        zip: zip || "",
+        phoneNumber: phoneNumber || "",
         loading: false,
       };
     case GET_LOGGED_IN_USER_REJECTED:
