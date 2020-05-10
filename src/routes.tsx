@@ -23,6 +23,7 @@ export default function Routes(props) {
         <HeadNav />
         <Switch>
           <Route path="/contacts/add" component={ContactAddEdit} />
+          <Route path="/contacts/edit/:id" component={ContactAddEdit} />
           <Route path="/contacts" component={ContactsApp} />
           <Route>Page not found</Route>
         </Switch>

@@ -6,5 +6,13 @@ import {
   faEnvelope,
   faComment,
   faPhoneAlt,
+  faHome,
 } from "@fortawesome/free-solid-svg-icons";
-library.add(faAddressBook, faChevronLeft, faEnvelope, faComment, faPhoneAlt);
+library.add(
+  faAddressBook,
+  faChevronLeft,
+  faEnvelope,
+  faComment,
+  faPhoneAlt,
+  faHome
+);

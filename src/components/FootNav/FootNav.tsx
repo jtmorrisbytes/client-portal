@@ -3,6 +3,8 @@ import { connect } from "react-redux";
 import { TRouter } from "../../store/routes";
 import { Link } from "react-router-dom";
 
+import "./FootNav.css";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 interface ReduxState {
   router: TRouter;
@@ -13,8 +15,8 @@ export function FootNav(props: Props) {
   return (
     <footer id={"FootNav"}>
       <Link to="/">
-        <FontAwesomeIcon icon="house" />
-        <p className="label">Home</p>
+        <FontAwesomeIcon fixedWidth size="3x" icon="home" />
+        <span className="label">Home</span>
       </Link>
     </footer>
   );

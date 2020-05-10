@@ -1,4 +1,7 @@
 #ContactAddEdit {
+  padding-top: 1rem;
+  position: relative;
+  height: 80vh;
   --font-size: 1rem;
   --row-spacing: calc(var(--font-size) / 4);
   --row-height: calc(var(--font-size) * 2);

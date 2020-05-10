@@ -1,0 +1,37 @@
+/* font calcs:
+ labels: 1rems
+ icon spacing: 0.25-0.5rems
+ padding: 0.25rems
+ image-height: 2-3rems
+
+*/
+
+footer#FootNav {
+  background-color: #f5f5f5;
+  border-top: 1px solid #bbb;
+  width: 100%;
+  --height: 5rem;
+  /* 
+  --padding: 0.25rem;
+  --label-height: 1em;
+  --image-height: calc(
+    var(--height) - var(--padding) * 3 - var(--label-height) */
+  /* ); */
+  justify-content: space-around;
+  height: var(--height);
+  position: fixed;
+  bottom: 0;
+  display: flex;
+  align-content: center;
+}
+footer#FootNav .label {
+  margin: 0;
+  text-align: center;
+}
+#FootNav > a {
+  display: flex;
+  flex-direction: column;
+}
+/* footer#footNav  {
+  text-align: center;
+} */
