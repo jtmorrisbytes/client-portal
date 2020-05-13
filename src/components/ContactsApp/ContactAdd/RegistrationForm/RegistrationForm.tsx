@@ -90,6 +90,7 @@ class ClientRegistrationForm extends React.Component<Props, State> {
   handleSubmit(e) {
     e.preventDefault();
     this.props.handleSubmit(
+      e,
       this.state.firstName,
       this.state.lastName,
       this.state.email,
