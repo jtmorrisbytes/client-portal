@@ -1,9 +1,9 @@
 {
-  "email": "aclientinlove234@gmail.com",
   "firstName": "John",
   "lastName": "Doe",
-  "streetAddress": "123 California way",
+  "email": "aclientinlove234@gmail.com",
   "phoneNumber": "1234567890",
+  "streetAddress": "123 California way",
   "city": "Somewheresvilee",
   "state": "California",
   "zip": "54321"

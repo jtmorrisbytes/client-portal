@@ -7,6 +7,7 @@ import { AppPicker } from "./components/AppPicker/AppPicker";
 
 import ContactsApp from "./components/ContactsApp/ContactsApp";
 import ContactAddEdit from "./components/ContactsApp/ContactAddEdit/ContactAddEdit";
+import ContactAdd from "./components/ContactsApp/ContactAdd/ContactAdd";
 import HeadNav from "./components/HeadNav/HeadNav";
 import FootNav from "./components/FootNav/FootNav";
 
@@ -22,7 +23,7 @@ export default function Routes(props) {
       <Route path="*">
         <HeadNav />
         <Switch>
-          <Route path="/contacts/add" component={ContactAddEdit} />
+          <Route path="/contacts/add" component={ContactAdd} />
           <Route path="/contacts/edit/:id" component={ContactAddEdit} />
           <Route path="/contacts" component={ContactsApp} />
           <Route>Page not found</Route>

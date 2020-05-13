@@ -1,0 +1,8 @@
+.ClientRegistrationForm {
+  height: 100%;
+  overflow: hidden;
+}
+.ClientRegistrationForm form {
+  /* overflow: auto; */
+  overflow: auto;
+}
