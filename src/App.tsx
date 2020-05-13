@@ -44,14 +44,27 @@ interface Props extends RouteComponentProps<any> {
 
 class App extends React.Component<Props, State> {
   routeWhitelist = ["/register", "/login"];
+  ref;
   constructor(props) {
     super(props);
     this.checkUserState = this.checkUserState.bind(this);
+    this.setAppHeight = this.setAppHeight.bind(this);
+    this.ref = React.createRef();
+  }
+  setAppHeight(e?) {
+    console.log("SETTING APP HEIGHT", this.ref?.current?.style?.height);
+    if (this.ref.current) {
+      this.ref.current.style.height = `${window.document.documentElement.clientHeight}px`;
+    }
+    // this.ref
   }
   componentDidMount() {
     this.props.getSessionStatus();
     this.checkUserState();
     window.addEventListener("hashchange", this.checkUserState);
+    // need to add scroll listener to handle the app height
+    this.setAppHeight();
+    window.addEventListener("scroll", this.setAppHeight);
   }
   compnentWillUnmount() {
     window.removeEventListener("hashchange", this.checkUserState);
@@ -65,7 +78,7 @@ class App extends React.Component<Props, State> {
   render() {
     // console.log("this.props.session", this.props.auth);
     return (
-      <div className="App">
+      <div className="App" ref={this.ref}>
         <div
           id="app-load"
           data-show={

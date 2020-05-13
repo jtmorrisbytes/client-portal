@@ -1,8 +1,8 @@
 .ClientRegistrationForm {
-  height: 100%;
-  overflow: hidden;
+  /* height: 100%; */
 }
 .ClientRegistrationForm form {
   /* overflow: auto; */
-  overflow: auto;
+  /* overflow: auto; */
+  /* overflow-y: scroll; */
 }

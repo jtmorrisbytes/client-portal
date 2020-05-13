@@ -8,6 +8,6 @@ describe("Autologin", () => {
     Cypress.Cookies.preserveOnce("connect.sid");
     login();
     cy.wait("@getUser");
-    cy.visit("/#/contacts");
+    cy.visit("/#/contacts/add");
   });
 });

@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { TUser } from "../../../store/user";
-import ClientRegistrationForm from "./RegistrationForm/RegistrationForm.tsx";
+import ClientRegistrationForm from "./RegistrationForm/RegistrationForm";
 import Axios from "axios";
 import { clientsApiUrl, userClientsApiUrl } from "../../../store/constants";
 import { RouteComponentProps } from "react-router-dom";

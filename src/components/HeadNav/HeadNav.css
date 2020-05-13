@@ -4,10 +4,13 @@ nav#HeadNav {
   display: flex;
   flex-direction: row;
   font-size: 150%;
+  width: 100%;
   align-content: center;
   justify-content: center;
   background-color: #fafafa;
   border-bottom: 1px solid #ccc;
+  position: fixed;
+  top: 0;
 }
 #HeadNav .backControl {
   display: inline-block;
