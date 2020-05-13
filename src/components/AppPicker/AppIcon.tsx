@@ -14,7 +14,7 @@ export default function AppIcon(props: Props) {
   const { text, id, name } = props;
   return (
     <div id={id} className="AppIcon">
-      <FontAwesomeIcon {...props} />
+      <FontAwesomeIcon {...props} fixedWidth size="4x" />
       <p>{text}</p>
     </div>
   );

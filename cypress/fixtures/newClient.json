@@ -1,0 +1,10 @@
+{
+  "email": "thisclientdoesnotexist@gmail.com",
+  "firstName": "Jane",
+  "lastName": "Doeseph",
+  "streetAddress": "123 candy lane",
+  "phoneNumber": "0987654321",
+  "city": "Candy Land",
+  "state": "Arcade",
+  "zip": "54321"
+}

@@ -2,6 +2,7 @@ const constants = require("../../../src/store/constants");
 describe("ContactAddEditComponent", () => {
   beforeEach(() => {
     Cypress.Cookies.preserveOnce("connect.sid");
+    cy.server();
     cy.fixture("user").as("User");
     cy.request("POST", constants.authApiUrl).then((xhr1) => {
       console.log("BEFOREEACH START AUTH SESSION");
@@ -21,6 +22,12 @@ describe("ContactAddEditComponent", () => {
     });
   });
   it("should be able to add a new contact", () => {
+    cy.route({
+      method: "POST",
+      url: constants.contactsApiUrl,
+      status: 401,
+    });
     cy.visit("#/contacts/add");
+    cy.get("[data-test-id='save-changes']").click();
   });
 });

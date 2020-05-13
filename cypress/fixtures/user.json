@@ -8,7 +8,7 @@
   "firstName": "John",
   "lastName": "Doe",
   "streetAddress": "123 California way",
-  "phone": "1234567890",
+  "phoneNumber": "1234567890",
   "city": "Somewheresvilee",
   "state": "California",
   "zip": 54321
