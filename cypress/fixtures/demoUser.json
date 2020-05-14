@@ -1,0 +1,11 @@
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "thisUserDoesNotExistTESTTESTTEST@gmail.com",
+  "password": "@d3!,EQ;+G68;E",
+  "phone": "1234567890",
+  "streetAddress": "123 California way",
+  "city": "Somewheresvilee",
+  "state": "California",
+  "zip": 54321
+}

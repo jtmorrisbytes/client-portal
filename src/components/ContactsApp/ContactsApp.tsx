@@ -25,7 +25,7 @@ function UserCard(props: TUser) {
           <div className="name lead">
             {props.firstName || "FirstName"} {props.lastName || "LastName"}
           </div>
-          <div className="phone">{props.phoneNumber || "1234567890"}</div>
+          <div className="phone">{props.phoneNumber || "0000000000"}</div>
           <div className="email">{props.email || "placeholder@domain.com"}</div>
         </Col>
       </Row>

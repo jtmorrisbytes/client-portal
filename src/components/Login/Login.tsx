@@ -80,8 +80,9 @@ class Login extends React.Component<Props, State> {
   handleSubmit(e) {
     e.preventDefault();
     // get the state string
-    console.log("the form has been submitted");
-    let state = decodeURIComponent(this.getAuthState());
+    console.log("HANDLESUBMIT AUTH STATE", this.props.auth.state);
+    let state =
+      this.props.auth.state || decodeURIComponent(this.getAuthState());
     if (state.length === 0) {
       console.log("state was empty on form submit, login will fail currently");
     }
