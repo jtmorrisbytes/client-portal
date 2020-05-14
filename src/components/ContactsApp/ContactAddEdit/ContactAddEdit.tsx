@@ -162,7 +162,7 @@ class ContactAddEdit extends React.Component<Props, State> {
         console.debug(
           `${this.componentStr} Attepmting to request Client id ${this.props.match.params.id}`
         );
-        Axios.get(contactsApiUrl + this.props.match.params.id)
+        Axios.get(contactsApiUrl + "/" + this.props.match.params.id)
           .then((response) => {
             this.setState({
               ...this.state,
