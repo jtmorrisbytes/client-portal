@@ -19,7 +19,7 @@ class ContactCard extends React.Component<Props, State> {
   goToContactView() {
     console.log(this.props);
     if (this.props.history) {
-      this.props.history.push(`/contacts/view/${this.props.id}`);
+      this.props.history.push(`/contacts/edit/${this.props.id}`);
     } else {
       console.log("the react router is not connected to this component ");
     }
