@@ -65,6 +65,7 @@ class App extends React.Component<Props, State> {
     // need to add scroll listener to handle the app height
     this.setAppHeight();
     window.addEventListener("scroll", this.setAppHeight);
+    window.addEventListener("resize", this.setAppHeight);
   }
   compnentWillUnmount() {
     window.removeEventListener("hashchange", this.checkUserState);
@@ -85,7 +86,8 @@ class App extends React.Component<Props, State> {
             this.props.sessionLoading ||
             this.props.user.loading ||
             this.props.auth.loading
-          }>
+          }
+        >
           LOADING...
         </div>
         <Routes />
