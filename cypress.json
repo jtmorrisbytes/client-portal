@@ -1,5 +1,5 @@
 {
-  "baseUrl": "https://aspiesolutions.com",
+  "baseUrl": "http://localhost:3002/",
   "experimentalComponentTesting": true,
   "componentFolder": "src/components",
   "testFiles": ["**/*.spec.jsx", "**/*.spec.js", "**/*.spec.tsx"]

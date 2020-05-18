@@ -14,29 +14,40 @@ interface Props extends RouteComponentProps {
 }
 interface State {}
 class ContactCard extends React.Component<Props, State> {
+  ref;
   state: State = {};
-
-  goToContactView() {
-    console.log(this.props);
-    if (this.props.history) {
-      this.props.history.push(`/contacts/edit/${this.props.id}`);
-    } else {
-      console.log("the react router is not connected to this component ");
+  constructor(props) {
+    super(props);
+    this.ref = React.createRef();
+  }
+  goToContactView(e) {
+    if (this.ref.current.id === e.target.id) {
+      console.log(this.props);
+      if (this.props.history) {
+        this.props.history.push(`/contacts/edit/${this.props.id}`);
+      } else {
+        console.log("the react router is not connected to this component ");
+      }
     }
   }
   componentDidMount() {}
   render() {
     return (
       <Row
-        onClick={this.goToContactView.bind(this)}
+        ref={this.ref}
+        // onClick={this.goToContactView.bind(this)}
         id={String(this.props.id)}
         className="ContactCard py-1 border border-dark">
         <Col xs="auto">
-          <img src="https://picsum.photos/50/50" />
+          <Link to={`/contacts/edit/${this.props.id}`}>
+            <img src="https://picsum.photos/50/50" />
+          </Link>
         </Col>
         <Col xs="3" sm="4" lg="7" xl="8" data-test-id={`name-${this.props.id}`}>
-          <div> {this.props.firstName}</div>
-          <div>{this.props.lastName}</div>
+          <Link to={`/contacts/edit/${this.props.id}`}>
+            <div> {this.props.firstName}</div>
+            <div>{this.props.lastName}</div>
+          </Link>
         </Col>
         {this.props.phoneNumber ? (
           <Col xs="auto" className="text-center">

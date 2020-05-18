@@ -3,15 +3,30 @@ import { Container, Row, Col, FormLabel, Button } from "react-bootstrap";
 import { RouteComponentProps } from "react-router-dom";
 import { connect } from "react-redux";
 import "./ContactAddEdit.css";
-import Axios from "axios";
-import { contactsApiUrl } from "../../../store/constants";
+import Axios, { AxiosResponse } from "axios";
+import { contactsApiUrl, clientsApiUrl } from "../../../store/constants";
+import { getUserClients } from "../../../store/user";
 import { TUser } from "../../../store/user";
+
+interface ClientResponse {
+  firstName: string;
+  middleName?: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  streetAddress: string;
+  city: string;
+  state: string;
+  zip: string;
+}
+
 interface match {
   id?: string;
 }
 
 interface Props extends RouteComponentProps<match> {
   user: TUser;
+  getUserClients: () => Promise<any>;
 }
 interface State {
   loading: boolean;
@@ -67,7 +82,10 @@ class ContactAddEdit extends React.Component<Props, State> {
       : "";
     this.handleInput = this.handleInput.bind(this);
     this.handleNameInput = this.handleNameInput.bind(this);
+    this.handlePhoneInput = this.handlePhoneInput.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
+    this.handleStreetAddress = this.handleStreetAddress.bind(this);
   }
 
   handleInput(e) {
@@ -76,6 +94,12 @@ class ContactAddEdit extends React.Component<Props, State> {
       [e.target.name || e.target.id]: e.target.value,
     });
     // not doing input validation right now
+  }
+  handleStreetAddress(e) {
+    this.setState({ ...this.state, streetAddress: e.target.value });
+  }
+  handlePhoneInput(e) {
+    this.setState({ ...this.state, phoneNumber: e.target.value });
   }
   handleNameInput(e) {
     if (/^[a-zA-Z]{0,255}$/.test(e.target?.value)) {
@@ -99,16 +123,21 @@ class ContactAddEdit extends React.Component<Props, State> {
       state,
       zip,
     } = this.state;
-    Axios.post(contactsApiUrl + (this.props?.match?.params?.id || ""), {
-      firstName: firstName,
-      lastName: lastName,
-      email,
-      phoneNumber,
-      streetAddress,
-      city,
-      state,
-      zip,
-    })
+    Axios.put(
+      clientsApiUrl,
+      {
+        clientId: this.props.match.params.id,
+        firstName,
+        lastName,
+        email,
+        phoneNumber,
+        streetAddress,
+        city,
+        state,
+        zip,
+      },
+      { withCredentials: true }
+    )
       .then((response) => {
         if (response.status == 200) {
           alert("Update Success");
@@ -125,6 +154,8 @@ class ContactAddEdit extends React.Component<Props, State> {
       })
       .catch((e) => {
         switch (e.response.status) {
+          case 400:
+            console.error("Server Returned bad request", e);
           case 401:
             alert("You are not logged in. Cannot save changes.");
             console.error(
@@ -137,6 +168,7 @@ class ContactAddEdit extends React.Component<Props, State> {
               console.log(
                 "ContactAddEdit: Could not redirect user on not authorized error because React Router was unavailible"
               );
+            window.location.reload();
 
             break;
           case 500:
@@ -156,25 +188,51 @@ class ContactAddEdit extends React.Component<Props, State> {
         }
       });
   }
+  handleDelete() {
+    Axios.delete(clientsApiUrl + "/" + this.props.match.params.id).then(
+      (response) => {
+        this.props.getUserClients().then(() => {
+          this.props.history.replace("/contacts");
+        });
+      }
+    );
+  }
   componentDidMount() {
     this.setState({ ...this.state, loading: true }, () => {
       if (this.props.match?.params?.id) {
         console.debug(
           `${this.componentStr} Attepmting to request Client id ${this.props.match.params.id}`
         );
-        Axios.get(contactsApiUrl + "/" + this.props.match.params.id)
-          .then((response) => {
+        Axios.get(clientsApiUrl + "/" + this.props.match.params.id, {
+          withCredentials: true,
+        })
+          .then((response: AxiosResponse<ClientResponse>) => {
+            let client: ClientResponse = {
+              firstName: "",
+              lastName: "",
+              email: "",
+              streetAddress: "",
+              phoneNumber: "",
+              city: "",
+              state: "",
+              zip: "",
+            };
+            if (Array.isArray(response.data) && response.data?.length > 0) {
+              client = response.data[0];
+            } else if (typeof response.data === "object") {
+              client = response.data;
+            }
             this.setState({
               ...this.state,
-              firstName: response.data.firstName || "",
-              middleName: response.data.middleName || "",
-              lastName: response.data.lastName || "",
-              email: response.data.email || "",
-              phoneNumber: response.data.phoneNumber || "",
-              streetAddress: response.data.streetAddress || "",
-              city: response.data.city || "",
-              state: response.data.state || "",
-              zip: response.data.zip || "",
+              firstName: client.firstName || "",
+              middleName: client.middleName || "",
+              lastName: client.lastName || "",
+              email: client.email || "",
+              phoneNumber: client.phoneNumber || "",
+              streetAddress: client.streetAddress || "",
+              city: client.city || "",
+              state: client.state || "",
+              zip: client.zip || "",
               loading: false,
             });
           })
@@ -277,9 +335,9 @@ class ContactAddEdit extends React.Component<Props, State> {
             placeholder="Email"
           />
           <input
-            id="phone"
+            id="phoneNumber"
             value={this.state.phoneNumber}
-            onChange={this.handleInput}
+            onChange={this.handlePhoneInput}
             type="tel"
             name="phone"
             data-test-id={"phone"}
@@ -290,14 +348,16 @@ class ContactAddEdit extends React.Component<Props, State> {
           {/* <h3>Address</h3> */}
           <div className="inputs">
             <input
-              onChange={this.handleInput}
-              id="str"
+              onChange={this.handleStreetAddress}
+              id="streetAddress"
               name="street"
+              value={this.state.streetAddress}
               data-test-id={"street"}
               placeholder="Street Address"
             />
             <input
               id="cit"
+              value={this.state.city}
               onChange={this.handleInput}
               name="city"
               data-test-id={"city"}
@@ -307,6 +367,7 @@ class ContactAddEdit extends React.Component<Props, State> {
               onChange={this.handleInput}
               id="sta"
               name="state"
+              value={this.state.state}
               data-test-id={"state"}
               placeholder="State"
             />
@@ -315,11 +376,20 @@ class ContactAddEdit extends React.Component<Props, State> {
               id="zip"
               name="zip"
               type="number"
+              value={this.state.zip}
               data-test-id={"zip"}
               placeholder="Zip"
             />
           </div>
         </div>
+        <Button
+          type="button"
+          variant="danger"
+          data-test-id="delete-client"
+          onClick={this.handleDelete}
+          block>
+          Delete
+        </Button>
         <Button
           type="submit"
           data-test-id="save-changes"
@@ -336,5 +406,5 @@ function mapStateToProps(state) {
   return { user };
 }
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = { getUserClients };
 export default connect(mapStateToProps, mapDispatchToProps)(ContactAddEdit);

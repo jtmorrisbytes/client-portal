@@ -62,7 +62,7 @@
     "sta zip";
   row-gap: var(--row-spacing);
 }
-#str {
+#streetAddress {
   grid-area: str;
 }
 #cit {

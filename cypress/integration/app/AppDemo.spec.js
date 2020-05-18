@@ -15,12 +15,28 @@ describe("Client Portal", () => {
     cy.fixture("client.json").then((client) => {
       cy.request(`${constants.clientsSearchApiUrl}?q=${client.email}`).then(
         (clientSearch) => {
-          cy.request({
-            method: "DELETE",
-            url: constants.clientsApiUrl,
-            body: { clientId: clientSearch.body[0].clientId },
-            failOnStatusCode: false,
-          });
+          if (clientSearch.body.length > 0) {
+            let { clientId } = clientSearch.body[0];
+            cy.request({
+              method: "DELETE",
+              url: constants.clientsApiUrl + `/${clientId}`,
+              failOnStatusCode: false,
+            });
+          }
+        }
+      );
+    });
+    cy.fixture("newClient.json").then((client) => {
+      cy.request(`${constants.clientsSearchApiUrl}?q=${client.email}`).then(
+        (clientSearch) => {
+          if (clientSearch.body.length > 0) {
+            let { clientId } = clientSearch.body[0];
+            cy.request({
+              method: "DELETE",
+              url: constants.clientsApiUrl + `/${clientId}`,
+              failOnStatusCode: false,
+            });
+          }
         }
       );
     });
@@ -39,6 +55,8 @@ describe("Client Portal", () => {
     cy.route("POST", constants.clientsApiUrl).as("registerClient");
     cy.route("GET", constants.userClientsApiUrl).as("getUserClients");
     cy.route("POST", constants.userClientsApiUrl).as("registerClientToUser");
+    cy.route("PUT", constants.clientsApiUrl).as("updateClient");
+    cy.route("DELETE", constants.clientsApiUrl + "/*").as("deleteClient");
     cy.fixture("demoLoginUser").as("user");
   });
   it("should require users to register", () => {
@@ -81,9 +99,9 @@ describe("Client Portal", () => {
           cy.get(`#${property}`)
             .as(property)
             .scrollIntoView()
-            .wait(40)
-            .type(user[property], { delay: 80 })
-            .wait(40);
+            // .wait(40)
+            .type(user[property] /*, { delay: 80 }*/);
+          // .wait(40);
         }
       });
       cy.get("button[name='register']").click();
@@ -133,14 +151,15 @@ describe("Client Portal", () => {
     cy.get("#contacts.AppIcon").should("exist").click();
     cy.hash().should("eq", "#/contacts");
     cy.wait("@getUser");
-    cy.wait(20000);
+    // cy.wait(20000);
     cy.get("[data-test-id='add-contact']").click();
     // fill out the client registration form
     cy.fixture("client.json").then((client) => {
       for (let property in client) {
         cy.get(`input[data-test-id='${property}'`)
           .scrollIntoView()
-          .type(client[property]);
+          .type(client[property])
+          .should("have.value", client[property]);
       }
     });
     cy.get("[data-test-id='submit']").click();
@@ -150,14 +169,76 @@ describe("Client Portal", () => {
       cy.wait("@registerClientToUser").then((regClientUserXhr) => {
         expect(regClientUserXhr.status).to.eq(204);
       });
-    });
-    cy.wait("@getUserClients");
-    cy.hash().should("eq", "#/contacts");
-    cy.request("GET", constants.userClientsApiUrl).then((userClients) => {
-      expect(userClients.body.length).to.be.greaterThan(0);
-      let client = userClients.body[0];
-      cy.get(`#${client.id}`).should("exist").click();
-      cy.hash().should("eq", `#/clients/edit/${client.id}`);
+
+      cy.wait("@getUserClients");
+      cy.hash().should("eq", "#/contacts");
+      cy.request("GET", constants.userClientsApiUrl).then((userClients) => {
+        expect(userClients.body.length).to.be.greaterThan(0);
+        let client = userClients.body[0];
+        cy.get(`#${client.id}`).should("exist");
+        cy.get(`[data-test-id='name-${client.id}']`).click();
+        cy.hash().should("eq", `#/contacts/edit/${client.id}`);
+        cy.fixture("newClient.json").then((newClient) => {
+          cy.get("[data-test-id='first-name']")
+            .clear()
+            .type(newClient.firstName)
+            .should("have.value", newClient.firstName);
+          cy.get("[data-test-id='last-name']")
+            .clear()
+            .type(newClient.lastName)
+            .should("have.value", newClient.lastName);
+          cy.get("[data-test-id='phone']")
+            .clear()
+            .type(newClient.phoneNumber)
+            .should("have.value", newClient.phoneNumber);
+          cy.get("[data-test-id='street']")
+            .clear()
+            .type(newClient.streetAddress)
+            .should("have.value", newClient.streetAddress);
+          cy.get("[data-test-id='city']")
+            .clear()
+            .type(newClient.city)
+            .should("have.value", newClient.city);
+          cy.get("[data-test-id='state']")
+            .clear()
+            .type(newClient.state)
+            .should("have.value", newClient.state);
+          cy.get("[data-test-id='zip']")
+            .clear()
+            .type(newClient.zip)
+            .should("have.value", newClient.zip);
+          cy.get("[data-test-id='save-changes']").click();
+          cy.wait("@updateClient").then((updateClientXhr) => {
+            console.log("updateClientXHR request", updateClientXhr);
+          });
+          cy.request("GET", constants.clientsApiUrl + `/${client.id}`).then(
+            (updatedClientXhr) => {
+              // expect(updatedClientXhr.body).to.be.an("object");
+              let updatedClient = updatedClientXhr.body;
+              if (Array.isArray(updatedClient)) {
+                updatedClient = updatedClient[0];
+              }
+              expect(updatedClient.firstName).to.eq(newClient.firstName);
+              expect(updatedClient.lastName).to.eq(newClient.lastName);
+              expect(updatedClient.phoneNumber).to.eq(newClient.phoneNumber);
+              expect(updatedClient.streetAddress).to.eq(
+                newClient.streetAddress
+              );
+              expect(updatedClient.city).to.eq(newClient.city);
+              expect(updatedClient.state).to.eq(newClient.state);
+              expect(updatedClient.zip).to.eq(newClient.zip);
+            }
+          );
+        });
+        cy.get(`[data-test-id='name-${client.id}']`).click();
+        cy.hash().should("eq", `#/contacts/edit/${client.id}`);
+        cy.get("[data-test-id='delete-client']").click();
+        cy.wait("@deleteClient");
+        cy.hash().should("eq", "#/contacts");
+        cy.request("GET", constants.userClientsApiUrl).then((userClients) => {
+          expect(userClients.body.length).to.eq(0);
+        });
+      });
     });
   });
 });
