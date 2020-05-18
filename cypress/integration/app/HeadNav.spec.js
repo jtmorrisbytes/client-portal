@@ -16,8 +16,6 @@ describe("Header Navigation", () => {
     cy.get("@HeadNav").should("exist");
   });
   it("should have a heading called title", () => {
-    cy.get("@HeadNav")
-      .children("#componentTitle")
-      .should("have.text", "Contacts");
+    cy.get("@HeadNav").should("contain", "Contacts");
   });
 });

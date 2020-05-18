@@ -12,7 +12,7 @@ function fillRegistrationForm(fixture, random) {
   cy.get("@email").type(email);
   cy.get("@password").type(fixture.password);
   cy.get("@confirmPassword").type(fixture.password);
-  cy.get("@phone").type(fixture.phone);
+  cy.get("@phone").type(fixture.phoneNumber);
   cy.get("@registerButton").should("be.enabled");
   cy.get("@address").type(fixture.streetAddress);
   cy.get("@city").type(fixture.city);
@@ -114,7 +114,9 @@ describe("The Register component", () => {
       cy.get("@confirmPassword")
         .type(user.password)
         .should("have.value", user.password);
-      cy.get("@phone").type(user.phone).should("have.value", user.phone);
+      cy.get("@phone")
+        .type(user.phoneNumber)
+        .should("have.value", user.phoneNumber);
       cy.get("@address")
         .type(user.streetAddress)
         .should("have.value", user.streetAddress);
@@ -166,7 +168,7 @@ describe("The Register component", () => {
       cy.get("#phone-too-short.form-text.text-danger")
         .should("exist")
         .should("have.text", "Phone Number is too short");
-      cy.get("@phone").type(user.phone);
+      cy.get("@phone").type(user.phoneNumber);
       cy.get("#phone-too-short.form-text.text-danger").should("not.exist");
     });
   });
@@ -175,7 +177,7 @@ describe("The Register component", () => {
       cy.get("@email").type(user.email);
       cy.get("@password").type(user.password);
       cy.get("@confirmPassword").type(user.password);
-      cy.get("@phone").type(user.phone);
+      cy.get("@phone").type(user.phoneNumber);
       cy.get("@registerButton").should("be.enabled");
     });
   });
@@ -189,7 +191,7 @@ describe("The Register component", () => {
       cy.get("@email").type(randomEmail);
       cy.get("@password").type(user.password);
       cy.get("@confirmPassword").type(user.password);
-      cy.get("@phone").type(user.phone);
+      cy.get("@phone").type(user.phoneNumber);
       cy.get("@registerButton").should("be.enabled");
       cy.get("@address").type(user.streetAddress);
       cy.get("@city").type(user.city);

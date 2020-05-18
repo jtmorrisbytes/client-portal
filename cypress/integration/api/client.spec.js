@@ -40,6 +40,20 @@ describe("clients api", () => {
       );
     });
   });
+  it("should allow the client to be searched by an id", () => {
+    cy.get("@client").then((client) => {
+      cy.request("GET", `${clientsApiUrl}/search?q=${client.email}`).then(
+        (xhr) => {
+          let clientResult = xhr.body[0];
+          cy.request("GET", `${clientsApiUrl}/${clientResult.id}`).then(
+            (getClientById) => {
+              expect(getClientById.status).to.eq(200);
+            }
+          );
+        }
+      );
+    });
+  });
   it("should allow the client to update all fields", () => {
     cy.get("@client").then((client) => {
       cy.fixture("newClient.json").then((newClient) => {
